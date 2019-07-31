@@ -21,14 +21,14 @@ filter_keep_reads.py -i SeqName_[12].fastq.gz -k SeqName.kraken.gz --xT Homo,Alt
 
 1) Trim adapters and poor-quality reads:
 ```bash
-    trimmomatic PE -threads 8 ${SeqName}_1_filt.fastq ${SeqName}_2_filt.fastq ${SeqName}_1_clean.fastq tmp_${SeqName}_1_trimmings.fq ${SeqName}_2_clean.fastq tmp_${SeqName}_2_trimmings.fq ILLUMINACLIP:${AdaptersPath}:2:10:7:1:true MINLEN:80 
+    trimmomatic PE -threads 8 SeqName_1_filt.fastq SeqName_2_filt.fastq SeqName_1_clean.fastq tmp_SeqName_1_trimmings.fq SeqName_2_clean.fastq tmp_SeqName_2_trimmings.fq ILLUMINACLIP:${AdaptersPath}:2:10:7:1:true MINLEN:80 
 ```
 
 2) Map each sample's reads to the reference containing consensus target sequences with your mapper of choice, and produce a sorted BAM file of mapped reads only, for each sample. Do **not** deduplicate the BAM files.
 ```bash
     bwa index rmlst_virus_extra_ercc.fasta
     RefStem="rmlst_virus_extra_ercc.fasta"
-    bwa mem ${RefStem} MySampleName_[12]_clean.fastq | samtools view -F4 -Sb -| samtools sort - 1> temp_${SID}.bam 2>> ${LogErr} 
+    bwa mem ${RefStem} SeqName[12]_clean.fastq | samtools view -F4 -Sb -| samtools sort - 1> temp_SeqName.bam 
 ```
 
 3) Generate a CSV file containing the counts for each uniquely mapped sequence in the entire pool:
