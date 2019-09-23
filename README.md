@@ -57,8 +57,7 @@ optional arguments:
                         Output directory. Default: current working directory.
   -p PROBELENGTHS, --probelengths PROBELENGTHS
                         Path to file containing probe lengths. Default:
-                        /well/resgen2/users/golubchi/CHIMES/PAPER/ChiMES-
-                        GAinS/scripts/probelengths_rmlst_virus_extra_ercc.csv
+                        $CASTANET_PATH/scripts/probelengths_rmlst_virus_extra_ercc.csv
   -d, --keepdups        If true, do not reassign duplicates to the sample with
                         the majority in each duplicate cluster (Default:
                         False).
