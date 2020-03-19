@@ -159,7 +159,11 @@ def Reassign_Dups(df):
     df.sort_values(['target_id', 'startpos', 'maplen', 'n'], ascending=True, inplace=True)
     df['n'] = df.groupby(['target_id', 'startpos', 'maplen']).n.cumsum()
     nrows0 = len(df)
-    df.drop_duplicates(['target_id', 'startpos', 'maplen'], keep='last', inplace=True)
+    duprows = df.duplicated(['target_id', 'startpos', 'maplen'], keep='last')
+    loginfo('Saving {0}_reads_to_drop.csv'.format(_args.batchname))
+    df[duprows][['sampleid', 'target_id', 'startpos', 'maplen']].to_csv('{}/{}_reads_to_drop.csv'.format(_args.outdir, _args.batchname), index=False)
+    df = df[~duprows]
+    # df.drop_duplicates(['target_id', 'startpos', 'maplen'], keep='last', inplace=True)
     loginfo('Kept {} of {} rows ({:.2f}).'.format(len(df), nrows0, float(len(df))/nrows0))
     ttl_dup_mapped_reads = df.groupby('sampleid').n.sum()
     grouped_dup_mapped_reads = df.groupby(['sampleid','probetype']).n.sum().unstack().fillna(0)
@@ -169,9 +173,9 @@ def Reassign_Dups(df):
         stoperr('Total reads after duplicate reassignment does not match starting total.')
     duprate_ttl = ttl_dup_mapped_reads/ttl_prededup_mapped_reads
     duprate_by_probetype = grouped_dup_mapped_reads/grouped_prededup_mapped_reads
-    loginfo('Saving {0}_dups.csv and {0}_dups_by_probetype.csv.'.format(_args.batchname))
-    duprate_ttl.to_csv('{}/{}_dups.csv'.format(_args.outdir, _args.batchname, header=True))
-    duprate_by_probetype.to_csv('{}/{}_dups_by_probetype.csv'.format(_args.outdir, _args.batchname))
+    loginfo('Saving {0}_duprate.csv and {0}_duprate_by_probetype.csv.'.format(_args.batchname))
+    duprate_ttl.to_csv('{}/{}_duprate.csv'.format(_args.outdir, _args.batchname, header=True))
+    duprate_by_probetype.to_csv('{}/{}_duprate_by_probetype.csv'.format(_args.outdir, _args.batchname))
     loginfo('Duplication rate:')
     loginfo(duprate_ttl.describe().to_string())
     return df
