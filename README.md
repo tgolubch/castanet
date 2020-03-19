@@ -86,3 +86,13 @@ optional arguments:
 Example: process_pool_grp.py -i /path/to/my/dataframe.csv.gz --samples
 /path/to/sampleinfo.csv
 ```
+This produces two key outputs: BATCHNAME_depth.csv and BATCHNAME_reads_to_drop.csv.
+
+BATCHNAME_depth.csv contains the number and proportion of reads for each sample and reference genome. Positives may need to be calibrated against a reference set, but in general, the deduplicated number of reads after removal of index misassignment (clean_n_reads_all) and the proportion of all clean reads that match the given target (clean_prop_of_reads_on_target) are the most informative.
+
+BATCHNAME_reads_to_drop.csv can be used to clean BAM files to remove misassigned reads, for downstream processing.
+
+5) If required, you can filter BAM files of interest to remove reads marked as contamination due to index misassignement:
+```bash
+   samtools -h ${SAMPLENAME}.bam | filter_bam.py SAMPLENAME BATCHNAME_reads_to_drop.csv
+```
