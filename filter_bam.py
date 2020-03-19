@@ -18,10 +18,9 @@ import sys
 import pandas as pd
 
 if __name__=='__main__':
-    if len(sys.argv) < 2 or '-h' in sys.argv:
+    if len(sys.argv) < 3 or '-h' in sys.argv:
         sys.stderr.write('Usage: samtools view -h MyBamFile | {} SAMPLENAME READS_TO_DROP.csv\n\n'.format(sys.argv[0])) 
 	sys.exit(1)
-    min_match_length = 40
     sampleid = sys.argv[1]
     # read list of reads to be dropped, header is "sampleid,target_id,startpos,maplen"
     reads_to_drop = pd.read_csv(sys.argv[2])
