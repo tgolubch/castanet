@@ -14,9 +14,9 @@ Dependencies:
 
 Workflow:
 
-0) Optional pre-processing to remove human reads, assuming you have run kraken on a sample called **SeqName** and saved the output to a file called SeqName.kraken.gz:
+0) Optionally pre-process your raw reads to remove human reads (genomic and mitochondrial) and common contaminants. Assuming you have run kraken on a sample called **SeqName** and saved the output to ${SeqName}.kraken.gz, the following creates a set of filtered fastq files, ${SeqName}_[12]_filt.fastq:
 ```bash
-filter_keep_reads.py -i SeqName_[12].fastq.gz -k SeqName.kraken.gz --xT Homo,Alteromonas,Achromobacter --suffix filt
+filter_keep_reads.py -i ${SeqName}_[12].fastq.gz  -k ${SeqName}.kraken.gz --xT Homo,Alteromonas,Achromobacter -x 1969841 --suffix filt
 ```
 
 1) Trim adapters and poor-quality reads:
@@ -28,10 +28,10 @@ filter_keep_reads.py -i SeqName_[12].fastq.gz -k SeqName.kraken.gz --xT Homo,Alt
 ```bash
     bwa index rmlst_virus_extra_ercc.fasta
     RefStem="rmlst_virus_extra_ercc.fasta"
-    bwa mem ${RefStem} SeqName[12]_clean.fastq | samtools view -F4 -Sb -| samtools sort - 1> temp_SeqName.bam 
+    bwa mem ${RefStem} SeqName[12]_clean.fastq | samtools view -F4 -Sb -| samtools sort - 1> ${SeqName}.bam 
 ```
 
-3) Generate a CSV file containing the counts for each uniquely mapped sequence in the entire pool:
+3) Generate a CSV file containing the counts for each uniquely mapped sequence in the entire pool, including improper pairs:
 ```bash
     for BamFilePath in $(ls \*.bam); do
         count_duplicates_single_bam_improper.sh ${BamFilePath}
