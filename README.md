@@ -92,7 +92,7 @@ BATCHNAME_depth.csv contains the number and proportion of reads for each sample 
 
 BATCHNAME_reads_to_drop.csv can be used to clean BAM files to remove misassigned reads, for downstream processing.
 
-5) If required, you can filter BAM files of interest to remove reads marked as contamination due to index misassignement:
+5) If required, you can filter BAM files of interest to remove reads marked as contamination due to index misassignment:
 ```bash
    samtools -h ${SAMPLENAME}.bam | filter_bam.py SAMPLENAME BATCHNAME_reads_to_drop.csv
 ```
