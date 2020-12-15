@@ -33,7 +33,7 @@ def get_gene_orgid(target_id):
 if __name__=='__main__':
     if len(sys.argv) < 2 or '-h' in sys.argv:
         sys.stderr.write('Usage: samtools view MyBamFile | {} \n\n'.format(sys.argv[0]))
-	sys.exit(1)
+        sys.exit(1)
     min_match_length = 40
     sampleid = sys.argv[1]
     for l in sys.stdin:
