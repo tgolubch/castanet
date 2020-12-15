@@ -123,6 +123,7 @@ def Add_Probetype(df):
     df.loc[df.target_id=='roseolovirus_allrecords_cluster_2', 'genename'] = 'HHV6_roseolovirus_allrecords_cluster_2'
     # more precise definition for the different virus types
     df.loc[df.genename=='enterovirus', 'genename'] = df.loc[df.genename=='enterovirus'].target_id.apply(lambda x: '_'.join(x.replace('_','-').split('-')[:2]))
+    df.loc[df.genename=='Coronaviridae', 'genename'] = df.loc[df.genename=='Coronaviridae'].target_id.apply(lambda x: '_'.join(x.replace('_','-').split('-')[:3]))
     df.loc[df.genename=='Adenoviridae', 'genename'] = df.loc[df.genename=='Adenoviridae'].target_id.apply(lambda x: '_'.join(x.replace('_','-').split('-')[:2]))
     df.loc[df.genename=='Flaviviridae', 'genename'] = df.loc[df.genename=='Flaviviridae'].target_id.apply(lambda x: '_'.join(x.replace('_','-').split('-')[:2]))
     df.loc[df.genename=='Influenza', 'genename'] = df.loc[df.genename=='Influenza'].target_id.apply(lambda x: '_'.join(x.replace('_','-').split('-')[:2]))
