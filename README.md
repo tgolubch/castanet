@@ -1,4 +1,7 @@
-# Castanet
+# Castanet fork - Python 3 with self-installation and convenience functions
+Rich Mayne 2023
+
+# Castanet - Original Readme
 Analysis of targeted metagenomics data as described in https://doi.org/10.1101/716902
 
 Dependencies:
