@@ -13,7 +13,7 @@ Example:
 7 8 227
 8 9 0
 '''
-
+from __future__ import print_function
 import sys
 
 def getmatchsize(cigar):
@@ -44,9 +44,9 @@ if __name__=='__main__':
         tlen = int(fields[8])
         if tlen >= min_match_length:
             # properly paired and match is of decent mapped length
-            print '{},{},{},{}'.format(ref, pos, tlen, sampleid)
+            print(f'{ref},{pos},{tlen},{sampleid}')
         elif (tlen == 0) and (getmatchsize(fields[5]) >= min_match_length) and (get_gene_orgid(ref) == get_gene_orgid(ref2)): 
             # improperly paired but same gene and match is of decent mapped length 
-            print '{},{},{},{}'.format(ref, pos, tlen, sampleid)
+            print(f'{ref},{pos},{tlen},{sampleid}')
         else:
             continue

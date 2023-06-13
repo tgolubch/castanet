@@ -1,5 +1,8 @@
 # Castanet fork - Python 3 with self-installation and convenience functions
 Rich Mayne 2023
+## Installation
+1. We assume the user has already downloaded and installed Conda, and has created a fresh environment. For more details see https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+1. 
 
 # Castanet - Original Readme
 Analysis of targeted metagenomics data as described in https://doi.org/10.1101/716902

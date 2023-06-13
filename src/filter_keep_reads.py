@@ -77,7 +77,8 @@ def Clean_Commandline():
         else:
             taxa = dict.fromkeys(_args.rT.split(','), retain_list)
             taxa.update(dict.fromkeys(_args.xT.split(','), exclude_list)) # if same taxid in both lists, exclusion takes precedence over retention
-            if taxa.has_key(''): del taxa['']
+            if '' in taxa: 
+                del taxa['']
             cmd = 'zcat' if _args.lineagefile.endswith('.gz') else 'cat'
             handle = sp.Popen((cmd, _args.lineagefile), bufsize=8192, stdout=sp.PIPE).stdout
             line = handle.readline()
