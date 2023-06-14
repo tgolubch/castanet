@@ -25,14 +25,14 @@ We include a shell script for installing all other dependencies (tested on Ubunt
 ## Workflow
 ```mermaid
 flowchart TD
-    A[Remove unwanted reads]-->B[participant Filter Reads]
-    B[participant Filter Reads]-->C[Trim adapters/poor quality reads]
-    C[Trim adapters/poor quality reads]-->D[Mapping]
-    D[Mapping]-->E[Generate unique read counts]
-    E[Generate unique read counts]-->F[Analysis]
-    F[Analysis]-->G[Post hoc filter]
-    G[Post hoc filter]-->|Optional|H[Filter Reads]
-    H[Filter Reads]-.->E
+    A[Remove unwanted reads]-->|Kraken2|B[participant Filter Reads]
+    B[Filter Reads]-->|Castanet|C[Trim adapters/poor quality reads]
+    C[Trim adapters/poor quality reads]-->|Trimmomatic|D[Mapping]
+    D[Mapping]-->|BWA, Samtools|E[Generate unique read counts]
+    E[Generate unique read counts]-->|Castanet, Samtools|F[Analysis]
+    F[Analysis]-->|Castanet|G[Post hoc filter]
+    G[Post hoc filter]-->|Castanet|H[Filter Reads]
+    H[Filter Reads]-.->|Castanet|E
 ```
 
 # Castanet - Original Readme
