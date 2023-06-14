@@ -25,15 +25,14 @@ We include a shell script for installing all other dependencies (tested on Ubunt
 ## Workflow
 ```mermaid
 sequenceDiagram
-    participant dotcom
-    participant iframe
-    participant viewscreen
-    dotcom->>iframe: loads html w/ iframe url
-    iframe->>viewscreen: request template
-    viewscreen->>iframe: html & javascript
-    iframe->>dotcom: iframe ready
-    dotcom->>iframe: set mermaid data on iframe
-    iframe->>iframe: render mermaid
+    participant Remove unwanted reads (Kraken2)
+    participant Filter Reads (Python)
+    participant Trim adapters/poor quality reads (Trimmomatic)
+    participant Mapping (BWA/Samtools)
+    participant Generate unique read counts (Python/Samtools)
+    participant Analysis (Python)
+    participant Post hoc filter (Python/Samtools)
+    Remove unwanted reads (Kraken2)->>Filter Reads (Python): xxxxx
 ```
 # Castanet - Original Readme
 Analysis of targeted metagenomics data as described in https://doi.org/10.1101/716902
