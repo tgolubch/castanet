@@ -2,12 +2,13 @@ import subprocess as sp
 import argparse 
 
 class E2eRunner:
-    '''Complete pipeline using functionality of original scripts'''
+    '''Complete pipeline using functionality of original scripts. See Readme from original repo.'''
     def __init__(self) -> None:
         self.a       = self.parse_args()
         self.aliases = self.initiate_aliases()
 
     def shell(self, args, executable='/bin/bash'):
+        '''Call Bash shell with input string as argument'''
         sp.run(args, text=True,shell=True, executable=executable)
 
     def initiate_aliases(self):
