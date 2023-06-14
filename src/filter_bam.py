@@ -25,7 +25,6 @@ if __name__=='__main__':
     # read list of reads to be dropped, header is "sampleid,target_id,startpos,maplen"
     reads_to_drop = pd.read_csv(sys.argv[2])
     reads_to_drop = reads_to_drop[reads_to_drop.sampleid==sampleid].set_index(['target_id','startpos','maplen'])
-    
     for l in sys.stdin:
         # output header as is
         if l.startswith('@'):

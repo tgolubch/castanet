@@ -185,7 +185,7 @@ def Add_Probelength(df):
     ''' Add length of target_id to each row.'''
     loginfo('Adding probe length information from {}'.format(_args.probelengths))
     try:
-        probelengths = pd.read_csv(_args.probelengths, dtype={'target_len':np.int})
+        probelengths = pd.read_csv(_args.probelengths, dtype={'target_len':int})
     except:
         stoperr('Failed to read probe information. Is {} a valid CSV file?'.format(_args.probelengths))
     probelengths = Add_Probetype(probelengths)
@@ -385,7 +385,7 @@ def Save_Tophits(depth):
     return
 
 
-# ============================================================================ #
+# ============================================================================ # 
 # MAIN                                                                         #
 # ============================================================================ #
 

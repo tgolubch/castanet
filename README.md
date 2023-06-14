@@ -1,8 +1,26 @@
 # Castanet fork - Python 3 with self-installation and convenience functions
 Rich Mayne 2023
 ## Installation
-1. We assume the user has already downloaded and installed Conda, and has created a fresh environment. For more details see https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
-1. 
+### Prerequisites
+We assume the user has installed the following. See attached links for guidance if not.
+1. A Linux-like environment: tested on Ubuntu 22.04 and Windows Subsystems Linux (WSL2) Ubuntu 22.04. User experience with Windows/Mac will vary.
+1. Conda (for installing external dependency, Kraken2). See https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
+1. Python > 3.7 <= 3.12, ideally installed specifically to a Conda environment made for running Castanet.
+1. Java runtime environment (for running external dependency, Trimmomatic). See https://www.java.com/en/download/manual.jsp 
+
+### Dependencies
+We include a shell script for installing all other dependencies (tested on Ubuntu 22.04). These may be installed via:
+```sudo bash install_deps.sh```
+
+
+## Changelog
+### Version 1, 14/06/23
+1. Python scripts naturalised to Python3
+1. Project and working directory structure
+1. Dependency installer shell script
+1. End-to-end automation workflow to run all steps
+1. Experiment directory management functions
+1. Example experiment readme
 
 # Castanet - Original Readme
 Analysis of targeted metagenomics data as described in https://doi.org/10.1101/716902

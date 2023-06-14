@@ -15,12 +15,12 @@ Example:
 '''
 from __future__ import print_function
 import sys
+import re
 
 def getmatchsize(cigar):
-    import re
-    pat = '([0-9]+)M'
-    matches = re.findall(pat, cigar)
-    if not len(matches): return 0
+    matches = re.findall(r'([0-9]+)M', cigar)
+    if not len(matches): 
+        return 0
     return sum(int(x) for x in matches)
 
 def get_gene_orgid(target_id):

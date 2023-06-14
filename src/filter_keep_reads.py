@@ -13,7 +13,7 @@
 from __future__ import division
 import os, sys, argparse
 import subprocess as sp
-from Bio import SeqIO
+# from Bio import SeqIO
 from collections import deque
 
 # ============================================================================ #
@@ -26,12 +26,12 @@ _progname=os.path.basename(sys.argv[0])
 # LOGGING                                                                      #
 # ============================================================================ #
 def loginfo(s):
-    sys.stderr.write('  Info: {0}\n'.format(s))
+    sys.stderr.write(f'  Info: {s}\n')
 def logerr(s):
-    sys.stderr.write('  Warning: {0}\n'.format(s))
+    sys.stderr.write(f'  Warning: {s}\n')
 def stoperr(s, errcode=1):
     errword = 'Finished' if not errcode else 'Error'
-    sys.stderr.write('  {0}: {1}\n'.format(errword, s))
+    sys.stderr.write(f'  {errword}: {s}\n')
     sys.exit(errcode)
 
 # ============================================================================ #
@@ -50,7 +50,7 @@ def Initialise():
     parser.add_argument( '--rT', default='', help='Text names of top-level taxa, to retain this and all taxa below it. Requires "--lineagefile". Eg. "--rT Bacteria,Viruses" to retain all bacterial and viral sequences.' )
     parser.add_argument( '--xT', default='', help='Text names of top-level taxa, to exclude this and all taxa below it. Requires "--lineagefile". Eg. "--xT \"Homo sapiens,Fungi\"" to exclude all human and fungal sequences.' )
     parser.add_argument( '--suffix', default='filt', help='Suffix to append to filtered files. Default is "filt".' )
-    parser.add_argument( '--lineagefile', default='lineages-2018-03-12.csv.gz', help='Path to CSV file containing lineages of all NCBI taxa. Default is "lineages-2018-03-12.csv.gz".' )
+    parser.add_argument( '--lineagefile', default='data/lineages-2018-03-12.csv.gz', help='Path to CSV file containing lineages of all NCBI taxa. Default is "lineages-2018-03-12.csv.gz".' )
     _args = parser.parse_args()
     return
 
@@ -61,7 +61,7 @@ def Clean_Commandline():
     _args.o = []
     for inpath in _args.i:
         if not os.path.isfile(inpath):
-            stoperr('Unable to open FastQ file {0}.'.format(inpath))
+            stoperr(f'Unable to open FastQ file {inpath}.')
         outstem = os.path.basename(inpath.split('.gz')[0]) if inpath.endswith('.gz') else os.path.basename(inpath)
         outpath = '{0}_{1}.fastq'.format(os.path.splitext(outstem)[0], _args.suffix)
         _args.o.append(outpath)
@@ -69,11 +69,11 @@ def Clean_Commandline():
     if len(_args.i) != len(_args.o):
         stoperr('Could not create output paths for all given input files.')
     if not os.path.isfile(_args.k):
-        stoperr('Unable to open Kraken file {0}.'.format(_args.i))
+        stoperr(f'Unable to open Kraken file {_args.k} for input {_args.i}.')
     retain_list, exclude_list = deque(), deque()
     if _args.rT or _args.xT:
         if not os.path.isfile(_args.lineagefile):
-            stoperr('Unable to open lineage file {0}.'.format(_args.lineagefile))
+            stoperr(f'Unable to open lineage file {_args.lineagefile}.')
         else:
             taxa = dict.fromkeys(_args.rT.split(','), retain_list)
             taxa.update(dict.fromkeys(_args.xT.split(','), exclude_list)) # if same taxid in both lists, exclusion takes precedence over retention
@@ -81,20 +81,20 @@ def Clean_Commandline():
                 del taxa['']
             cmd = 'zcat' if _args.lineagefile.endswith('.gz') else 'cat'
             handle = sp.Popen((cmd, _args.lineagefile), bufsize=8192, stdout=sp.PIPE).stdout
-            line = handle.readline()
+            line = read_line(handle)
             while line:
-                for taxname, taxlist in taxa.iteritems():
-                    if ',{},'.format(taxname) in line:
+                for taxname, taxlist in taxa.items():
+                    if f',{taxname},' in line:
                         taxlist.append(line.split(',', 1)[0])
-                line = handle.readline()
+                line = read_line(handle)
     try:
         _args.x = (frozenset(_args.x.split(',')) | frozenset(exclude_list)) - frozenset([''])
     except:
-        stoperr('TaxID(s) {0} invalid.'.format(_args.x))
+        stoperr(f'TaxID(s) {_args.x} invalid.')
     try:
         _args.r = (frozenset(_args.r.split(',')) | frozenset(retain_list)) - frozenset([''])
     except:
-        stoperr('TaxID(s) {0} invalid.'.format(_args.r))
+        stoperr(f'TaxID(s) {_args.r} invalid.')
     if not _args.r and not _args.x:
         stoperr('Nothing to do. Exiting.')
     return
@@ -111,11 +111,11 @@ def Filter_Reads(reads_to_exclude, reads_to_keep, inpath, out_h):
     '''
     cmd = 'zcat' if inpath.endswith('.gz') else 'cat'
     handle = sp.Popen((cmd, inpath), bufsize=8192, stdout=sp.PIPE).stdout
-    line = handle.readline()
+    line = read_line(handle)
     num_reads = 0
     while line:
-        readheader, seq, qh, qual = line, handle.readline(), handle.readline(), handle.readline()
-        line = handle.readline()
+        readheader, seq, qh, qual = line, read_line(handle), read_line(handle), read_line(handle)
+        line = read_line(handle)
         readname = readheader[1:].split('/')[0].split()[0]
         to_keep = True if not reads_to_keep or (reads_to_keep and (readname in reads_to_keep)) else False
         to_exclude = True if (reads_to_exclude and (readname in reads_to_exclude)) else False
@@ -128,26 +128,30 @@ def Filter_Reads(reads_to_exclude, reads_to_keep, inpath, out_h):
 # MAIN                                                                         #
 # ============================================================================ #
 
+def read_line(h):
+    return h.readline().decode("utf-8")
+
 if __name__ == '__main__':
     Initialise()
     Clean_Commandline()
     reads_to_exclude, reads_to_keep = deque(), deque()
     cmd = 'zcat' if _args.k.endswith('.gz') else 'cat'
     handle = sp.Popen((cmd, _args.k), bufsize=8192, stdout=sp.PIPE).stdout
-    line = handle.readline()
+    line = read_line(handle)
     while line:
         readname, taxid = line.split()[1:3]
         if taxid in _args.x:
             reads_to_exclude.append(readname)
         elif taxid in _args.r:
             reads_to_keep.append(readname)
-        line = handle.readline()
+        line = read_line(handle)
     reads_to_exclude, reads_to_keep = frozenset(reads_to_exclude), frozenset(reads_to_keep)
-    loginfo('Excluding {} reads ({} taxa specified).'.format(len(reads_to_exclude), len(_args.x)) )
-    loginfo('Retaining {} reads ({} taxa specified).'.format(len(reads_to_keep) if reads_to_keep else 'all other', len(_args.r)) )
+    loginfo(f'Excluding {len(reads_to_exclude)} reads ({_args.x} taxa specified).')
+    loginfo(f'Retaining {len(reads_to_keep) if reads_to_keep else "all other"} reads ({len(_args.r)} taxa specified).')
+
     for (inpath, outpath) in zip(_args.i, _args.o):
         with open(outpath, 'w', buffering=8192) as out_h:
             num_reads = Filter_Reads(reads_to_exclude, reads_to_keep, inpath, out_h)
-        loginfo('Wrote {0} reads to {1}.'.format(num_reads, outpath))
+        loginfo(f'Wrote {num_reads} reads to {outpath}.')
 
 # ============================================================================ #
