@@ -24,16 +24,17 @@ We include a shell script for installing all other dependencies (tested on Ubunt
 
 ## Workflow
 ```mermaid
-graph TD;
-    Remove unwanted reads-->participant Filter Reads
-    participant Filter Reads-->Trim adapters/poor quality reads
-    Trim adapters/poor quality reads-->Mapping
-    Mapping-->Generate unique read counts
-    Generate unique read counts-->Analysis
-    Analysis-->Post hoc filter
-    Post hoc filter-->Filter Reads
-    Filter Reads-->Generate unique read counts
+flowchart TD
+    A[Remove unwanted reads]-->B[participant Filter Reads]
+    B[participant Filter Reads]-->C[Trim adapters/poor quality reads]
+    C[Trim adapters/poor quality reads]-->D[Mapping]
+    D[Mapping]-->E[Generate unique read counts]
+    E[Generate unique read counts]-->F[Analysis]
+    F[Analysis]-->G[Post hoc filter]
+    G[Post hoc filter]-->|Optional|H[Filter Reads]
+    H[Filter Reads]-.->E
 ```
+
 # Castanet - Original Readme
 Analysis of targeted metagenomics data as described in https://doi.org/10.1101/716902
 
