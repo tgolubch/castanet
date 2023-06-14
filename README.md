@@ -24,15 +24,15 @@ We include a shell script for installing all other dependencies (tested on Ubunt
 
 ## Workflow
 ```mermaid
-sequenceDiagram
-    participant Remove unwanted reads (Kraken2)
-    participant Filter Reads (Python)
-    participant Trim adapters/poor quality reads (Trimmomatic)
-    participant Mapping (BWA/Samtools)
-    participant Generate unique read counts (Python/Samtools)
-    participant Analysis (Python)
-    participant Post hoc filter (Python/Samtools)
-    Remove unwanted reads (Kraken2)->>Filter Reads (Python): xxxxx
+graph TD;
+    Remove unwanted reads-->participant Filter Reads
+    participant Filter Reads-->Trim adapters/poor quality reads
+    Trim adapters/poor quality reads-->Mapping
+    Mapping-->Generate unique read counts
+    Generate unique read counts-->Analysis
+    Analysis-->Post hoc filter
+    Post hoc filter-->Filter Reads
+    Filter Reads-->Generate unique read counts
 ```
 # Castanet - Original Readme
 Analysis of targeted metagenomics data as described in https://doi.org/10.1101/716902
