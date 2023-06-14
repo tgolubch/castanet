@@ -2,7 +2,10 @@ import subprocess as sp
 import argparse 
 
 class E2eRunner:
-    '''Complete pipeline using functionality of original scripts. See Readme from original repo.'''
+    '''Complete pipeline using functionality of original scripts. See Readme from original repo.
+    Note: several optional arguments from original are hard-coded, especially on step "analysis".
+    Full functionality offered by API.
+    '''
     def __init__(self) -> None:
         self.a       = self.parse_args()
         self.aliases = self.initiate_aliases()
