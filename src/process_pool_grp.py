@@ -56,7 +56,7 @@ def Initialise():
     parser.add_argument( '-o', '--outdir', default=os.getcwd(), help='Output directory. Default: current working directory.' )
     parser.add_argument( '-p', '--probelengths', default='{}/probelengths_rmlst_virus_extra_ercc.csv'.format(os.path.dirname(sys.argv[0])),\
                                 help='Path to file containing probe lengths. Default: {}/probelengths_rmlst_virus_extra_ercc.csv'.format(os.path.dirname(sys.argv[0])) )
-    parser.add_argument( '-d', '--keepdups', action='store_true', default=False, help='If true, do not reassign duplicates to the sample with the majority in each duplicate cluster (Default: False).' )
+    parser.add_argument( '-d', '--keepdups', action='store_true', default=True, help='If true, do not reassign duplicates to the sample with the majority in each duplicate cluster (Default: False).' )
     parser.add_argument( '--samples', required=True, help='Path to CSV file containing information about raw reads (must have at least following fields: sampleid, pt, rawreadnum). Field "pt" must match clinical data.' )
     parser.add_argument( '--clin', required=False, help='Path to CSV file containing clinical data (must have at least following fields: pt, clin_int; the field "sampleid" if present will be ignored). Other fields will be ignored.' )
     parser.add_argument( '--depth_inf', required=False, \

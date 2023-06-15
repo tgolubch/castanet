@@ -1,5 +1,7 @@
-# Castanet fork - Python 3 with self-installation and convenience functions
-Rich Mayne 2023
+# Castanet fork - Python 3 implementation 
+Forked from https://github.com/tgolubch/castanet, originally described in https://doi.org/10.1101/716902
+
+This implementation is written in Python 3 and has additional convenience features, such as end-to-end workflows, optimizations, automated installation of dependencies and an API compatible with containerization.
 ## Installation
 ### Prerequisites
 We assume the user has installed the following. See attached links for guidance if not.
@@ -48,9 +50,11 @@ flowchart TD
 1. Project and working directory structure
 1. Dependency installer shell script
 1. Experiment directory management functions
+1. Refresh example experiment in readme to fit end to end workflow script
 
 ### To do
 1. Python scripts adapted to OOP practices for security and speed
+1. Git hooks for contributors
 1. Unified API with end-to-end workflow endpoint
 1. Vectorization enhancements
 1. Containerize
