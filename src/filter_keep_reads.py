@@ -50,7 +50,7 @@ def Initialise():
     parser.add_argument( '--rT', default='', help='Text names of top-level taxa, to retain this and all taxa below it. Requires "--lineagefile". Eg. "--rT Bacteria,Viruses" to retain all bacterial and viral sequences.' )
     parser.add_argument( '--xT', default='', help='Text names of top-level taxa, to exclude this and all taxa below it. Requires "--lineagefile". Eg. "--xT \"Homo sapiens,Fungi\"" to exclude all human and fungal sequences.' )
     parser.add_argument( '--suffix', default='filt', help='Suffix to append to filtered files. Default is "filt".' )
-    parser.add_argument( '--lineagefile', default='data/lineages-2018-03-12.csv.gz', help='Path to CSV file containing lineages of all NCBI taxa. Default is "lineages-2018-03-12.csv.gz".' )
+    parser.add_argument( '--lineagefile', default='data/ncbi_lineages_2023-06-15.csv.gz', help='Path to CSV file containing lineages of all NCBI taxa. Default is "lineages-2018-03-12.csv.gz".' )
     _args = parser.parse_args()
     return
 
