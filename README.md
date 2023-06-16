@@ -84,6 +84,12 @@ We opt for bwa-mem2 for doing Burrows Wheeler alignment.
 
 Castanet is not tested with original bwa, bowtie2 etc. but may be compatible. 
 
+### Samtools
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+### Trimmomatic 
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 ## Changelog
 ### Version 1, 14/06/23
 1. Python scripts naturalised to Python3
@@ -91,11 +97,11 @@ Castanet is not tested with original bwa, bowtie2 etc. but may be compatible.
 1. Dependency installer shell script
 1. Experiment directory management functions
 1. Refresh example experiment in readme to fit end to end workflow script
+1. Python scripts adapted to OOP practices for security and speed
+1. Unified API with end-to-end workflow endpoint
 
 ### To do
-1. Python scripts adapted to OOP practices for security and speed
 1. Git hooks for contributors
-1. Unified API with end-to-end workflow endpoint
 1. Vectorization enhancements
 1. Containerize
 1. Unit tests
