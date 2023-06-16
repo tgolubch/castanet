@@ -41,15 +41,15 @@ class E2eRunner:
     
     def main(self):
         '''Entrypoint'''
-        self.initiate_aliases()
-        run_kraken(self.a, api_entry=False)
-        self.shell(f"python3 -m app.src.filter_keep_reads -i {self.a.ExpDir}{self.a.SeqName}_[12].fastq.gz -k {self.a.ExpDir}{self.a.SeqName}_1.kraken --xT Homo,Alteromonas,Achromobacter -x 1969841 --lineage data/ncbi_lineages_2023-06-15.csv.gz")
-        run_trim(self.a, trim_path=self.aliases["trim"], api_entry=False)
-        run_map(self.a, bwa_path=self.aliases["bwa"], api_entry=False)
-        run_counts(self.a, api_entry=False)
+        # self.initiate_aliases()
+        # run_kraken(self.a, api_entry=False)
+        # self.shell(f"python3 -m app.src.filter_keep_reads -i {self.a.ExpDir}{self.a.SeqName}_[12].fastq.gz -k {self.a.ExpDir}{self.a.SeqName}_1.kraken --xT Homo,Alteromonas,Achromobacter -x 1969841 --lineage data/ncbi_lineages_2023-06-15.csv.gz")
+        # run_trim(self.a, trim_path=self.aliases["trim"], api_entry=False)
+        # run_map(self.a, bwa_path=self.aliases["bwa"], api_entry=False)
+        # run_counts(self.a, api_entry=False)
         self.shell(f"python3 src/process_pool_grp.py -i {self.a.ExpDir}PosCounts.csv --samples {self.a.Samples} -p {self.a.Probes} -b {self.a.ExpName}")
-        if self.a.PostFilt:
-            run_post_filter(self.a, api_entry=False)
+        # if self.a.PostFilt:
+        #     run_post_filter(self.a, api_entry=False)
 
 if __name__ == "__main__":
     '''Example input

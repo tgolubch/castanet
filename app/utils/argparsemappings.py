@@ -28,7 +28,7 @@ def map_args_analysis(ap):
     return {
         "ExpName": ap.b,
         "input_file":  ap.i,
-        "ExpDir": ap.o,
+        "ExpDir": ap.o + "/",
         "Probes": ap.p, 
         "Samples": ap.samples, 
         "KeepDups": opts[0],
