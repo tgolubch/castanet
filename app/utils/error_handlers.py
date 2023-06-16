@@ -1,4 +1,5 @@
-import os, sys
+import os
+import pandas as pd
 import subprocess as sp
 from collections import deque
 
@@ -62,3 +63,46 @@ def error_handler_filter_keep_reads(argies):
 def error_handler_parse_bam_positions(argvs):
     if len(argvs) < 2 or '-h' in argvs:
         stoperr(f'Usage: samtools view MyBamFile | {argvs[0]} \n\n')
+
+def error_handler_analysis(argies):
+    '''Print errors, and exit if necessary, on bad input data. Make outdir'''
+    '''Validate main infput file (dataframe from processed BAM files for this pool)'''
+    if not os.path.isfile(argies["input_file"]):
+        stoperr('Unable to open input file {0}.'.format(argies["input_file"]))
+
+    '''Validate output directory'''
+    if not os.path.isdir(argies["ExpDir"]):
+        try:
+            os.mkdir(argies["ExpDir"])
+        except OSError:
+            stoperr(f'Failed to create output directory {argies["ExpDir"]}.')
+
+    '''Validate sample info file'''
+    if argies["Samples"] and not os.path.isfile(argies["Samples"]):
+        stoperr(f'Unable to open sample data from input file {argies["Samples"]}.')
+    with open(argies["Samples"]) as samples_inf:
+        samples_header_check = samples_inf.readline()
+        if ('sampleid' not in samples_header_check) or ('pt' not in samples_header_check) or ('rawreadnum' not in samples_header_check):
+            stoperr(f'{argies["Samples"]} must contain at least the following columns: pt, sampleid, rawreadnum')
+    if argies["Clin"]:
+        if not os.path.isfile(argies["Clin"]):
+            stoperr(f'Unable to open clinical data from input file {argies["Clin"]}.')
+        '''Validate clinical info file'''
+        with open(argies["Clin"]) as clin_inf:
+            clin_header_check = clin_inf.readline().split(',')
+            if ('pt' not in clin_header_check):
+                stoperr(f'{argies["Clin"]} must contain at least the following columns: pt, clin_int')
+
+    '''Validate batch name'''
+    if not argies["ExpName"].replace('_', '').isalnum():
+        stoperr(f'{argies["ExpName"]} is not a valid batch name. Must be alphanumeric.')
+
+    '''Open data frame'''
+    try:
+        df = pd.read_csv(argies["input_file"], compression=('gzip' if argies["input_file"].endswith('.gz') else None), header=None, \
+                                names=['n', 'target_id', 'startpos', 'maplen', 'sampleid'])
+    except (IOError, TypeError, pd.errors.ParserError) as e:
+        stoperr(f'Failed to read dataframe from {df} : {e}')
+    if argies["DepthInf"] and not os.path.isfile(argies["DepthInf"]):
+        stoperr(f'Unable to open precomputed depth file {argies["DepthInf"]}.')
+    return df

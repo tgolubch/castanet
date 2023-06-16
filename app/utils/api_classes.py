@@ -23,14 +23,6 @@ class Data_RefStem(BaseModel):
 class Data_PostFilt(BaseModel):
     PostFilt: bool= Query(False,
                          description="Post hoc filter BAM file to remove reads marked as contaminations")
-
-class Data_Samples(BaseModel):
-    Samples: str = Query("data/samples.csv",
-                         description="CSV file containing sample data for annotations during analysis phase. Absolute path required.")
-
-class Data_Probes(BaseModel):
-    Probes: str = Query("data/probelengths_rmlst_virus_extra_ercc.csv",
-                        description="CSV file containing probe length mappings. Absolute path required.")
     
 class Data_ExpName(BaseModel):
     ExpName: str = Query('myexperiment',
@@ -60,10 +52,22 @@ class Data_FilterFilters(BaseModel):
     ExcludeNames: Union[None, str] = Query("Homo,Alteromonas,Achromobacter",
                                       description="(OPTIONAL) Exclude these species names from filter keep reads step. Comma separate without spaces. Will be ignored if no Linneage file specified.")
 
+class Data_AnalysisExtras(BaseModel):
+    Probes: str = Query("data/probelengths_rmlst_virus_extra_ercc.csv",
+                        description="CSV file containing probe length mappings. Absolute path required.")
+    Samples: str = Query("data/samples.csv",
+                         description="CSV file containing sample data for annotations during analysis phase. Absolute path required.")
+    KeepDups: bool = Query(True,
+                           description='(OPTIONAL) If true, do not reassign duplicates to the sample with the majority in each duplicate cluster (Default: True).')
+    Clin: Optional[str] = Query("Delete this line if not using",
+                                description='(OPTIONAL) Path to CSV file containing clinical data (must have at least following fields: pt, clin_int; the field "sampleid" if present will be ignored). Other fields will be ignored.')
+    DepthInf: str = Query("Delete this line if not using",
+                          description='(OPTIONAL, For regenerating full CSV with new clinical info): Path to previously generated CSV file of read depth per position for each probe, for all samples in this batch. Must contain the following fields: sampleid, target_id, depth_mean, depth_std, depth_25pc, depth_median, depth_75pc, prop_target_covered, prop_target_covered_mindepth2, prop_target_covered_mindepth5, prop_target_covered_mindepth10, udepth_mean, udepth_std, udepth_25pc, udepth_median, udepth_75pc, uprop_target_covered, uprop_target_covered_mindepth2, uprop_target_covered_mindepth5, uprop_target_covered_mindepth10')
+
 '''Endpoint objects'''
 
 class E2e_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AdaptP, Data_RefStem, 
-                Data_PostFilt, Data_Probes, Data_KrakenDir, Data_NThreads, Data_FilterFilters):
+                Data_PostFilt, Data_AnalysisExtras, Data_KrakenDir, Data_NThreads, Data_FilterFilters):
     ...
 
 class Preprocess_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_KrakenDir, Data_NThreads):
@@ -81,7 +85,7 @@ class Mapping_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_RefStem):
 class Count_map_data(Data_ExpDir, Data_SeqName, Data_ExpName):
     ...
 
-class Analysis_data(Data_ExpName, Data_Samples, Data_Probes):
+class Analysis_data(Data_ExpDir, Data_ExpName, Data_AnalysisExtras):
     ...
 
 class Post_filter_data(Data_ExpDir, Data_SeqName, Data_ExpName):

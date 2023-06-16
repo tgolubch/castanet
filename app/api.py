@@ -6,6 +6,7 @@ from app.src.filter_keep_reads import FilterKeepReads
 from app.src.trim_adapters import run_trim
 from app.src.map_reads_to_ref import run_map
 from app.src.generate_counts import run_counts
+from app.src.analysis import Analysis
 from app.src.post_filter import run_post_filter
 from app.utils.api_classes import (E2e_data, Preprocess_data, Filter_keep_reads_data,
                                     Trim_data, Mapping_data, Count_map_data, Analysis_data,
@@ -68,7 +69,7 @@ async def end_to_end(payload: E2e_data):
     run_trim(payload)
     run_map(payload)
     run_counts(payload)
-    # do_analysis()
+    run_analysis(payload)
     if payload["PostFilt"]:
       run_post_filter(payload)
     return "Task complete. See terminal output for details."
@@ -110,8 +111,12 @@ async def count_mapped(payload: Count_map_data):
 @app.post("/analysis/", tags=["Individual pipeline functions"])
 async def analysis(payload: Analysis_data):
     payload = jsonable_encoder(payload)
-    # do_analysis()
+    run_analysis(payload)
     return "Task complete. See terminal output for details."
+
+def run_analysis(payload):
+    cls = Analysis(payload)
+    cls.main()
 
 @app.post("/post_filter/", tags=["Individual pipeline functions"])
 async def post_filter(payload: Post_filter_data):

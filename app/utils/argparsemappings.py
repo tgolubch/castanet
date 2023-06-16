@@ -1,5 +1,6 @@
+'''Map arg parser arguments to API arguments'''
 def map_args_filter_keep_reads(ap):
-    '''Map arg parser arguments to API arguments'''
+    '''Filter keep reads mappings'''
     opts = []
     for field in [ap.r, ap.x, ap.rT, ap.xT, ap.lineagefile]:
         try:
@@ -14,4 +15,23 @@ def map_args_filter_keep_reads(ap):
         "RetainNames": opts[2],
         "ExcludeNames": opts[3],
         "LineageFile": opts[4]
+    }
+
+def map_args_analysis(ap):
+    '''Analysis mappings'''
+    opts = []
+    for field in [ap.keepdups, ap.clin, ap.depth_inf]:
+        try:
+            opts.append(field)
+        except AttributeError:
+            opts.append("")
+    return {
+        "ExpName": ap.b,
+        "input_file":  ap.i,
+        "ExpDir": ap.o,
+        "Probes": ap.p, 
+        "Samples": ap.samples, 
+        "KeepDups": opts[0],
+        "Clin": opts[1],
+        "DepthInf": opts[2]
     }
