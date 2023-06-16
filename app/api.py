@@ -2,9 +2,10 @@ from fastapi import FastAPI, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
 from app.src.preprocess import run_kraken
 from app.src.filter_keep_reads import FilterKeepReads
+from app.src.trim_adapters import run_trim
 from app.utils.api_classes import (E2e_data, Preprocess_data, Filter_keep_reads_data,
                                     Trim_data, Mapping_data, Count_map_data, Analysis_data,
-                                    Post_filter_data, Data_KrakenDir)
+                                    Post_filter_data)
 
 description = """
 CASTANET is software for analysis of targeted metagenomics sequencing data, originally by tgolubch (https://github.com/tgolubch) and refactored to Python3 by mayne941 (https://github.com/Mayne941).
@@ -58,7 +59,7 @@ async def end_to_end(payload: E2e_data):
     payload = jsonable_encoder(payload)
     run_kraken(payload)
     do_filter_keep_reads(payload)
-    # do_trim()
+    run_trim(payload)
     # do_map()
     # do_count_mapped()
     # do_analysis()
@@ -69,7 +70,7 @@ async def end_to_end(payload: E2e_data):
 @app.post("/preprocess/", tags=["Individual pipeline functions"])
 async def preprocess(payload: Preprocess_data):
     payload = jsonable_encoder(payload)
-    run_kraken()
+    run_kraken(payload)
     return "Task complete. See terminal output for details."
 
 @app.post("/filter_keep_reads/", tags=["Individual pipeline functions"])
@@ -85,7 +86,7 @@ def do_filter_keep_reads(payload):
 @app.post("/trim_data/", tags=["Individual pipeline functions"])
 async def trim_data(payload: Trim_data):
     payload = jsonable_encoder(payload)
-    # do_trim()
+    run_trim(payload)
     return "Task complete. See terminal output for details."
 
 @app.post("/mapping/", tags=["Individual pipeline functions"])

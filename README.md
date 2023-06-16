@@ -48,14 +48,14 @@ flowchart TD
 ### Preprocess
 Calls Kraken2, which is a command line tool for doing taxonomic classification using exact k-mer matches, to identify human (genomic and mitochondrial) raw reads, as well as common contaminants. Output are called in the next pipeline step and removed prior to analysis. For more details, see ```https://ccb.jhu.edu/software/kraken2/```
 
-### Filter keep reads
-
-
 *Input args*
 1. Kraken database directory (set up automatically through running ```install_deps.sh```)
 1. Threads. Number of individual processes to be run concurrently.
 1. Input file, in fastq.gz format. Castanet automatically generates the input sequence name directory from ExpDir and SeqName arguments. *We assume your two files will be named as follows: {ExpDir}{SeqName}_1.fastq.gz, {ExpDir}{SeqName}_2.fastq.gz*.
 1. Output file, in .kraken format. Castanet is hard coded to produce output in the following format: {ExpDir}{SeqName}_1.kraken.
+
+### Filter keep reads
+
 
 ## Dependency notes
 ### Lineage file

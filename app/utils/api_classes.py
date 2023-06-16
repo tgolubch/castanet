@@ -72,7 +72,7 @@ class Preprocess_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_KrakenDir, D
 class Filter_keep_reads_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_FilterFilters):
     ...
 
-class Trim_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AdaptP):
+class Trim_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AdaptP, Data_NThreads):
     ...
 
 class Mapping_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_RefStem):

@@ -1,6 +1,7 @@
 import subprocess as sp
 import argparse 
 from app.src.preprocess import run_kraken
+from app.src.trim_adapters import run_trim
 
 class E2eRunner:
     '''Complete pipeline using functionality of original scripts. See Readme from original repo.
@@ -45,7 +46,7 @@ class E2eRunner:
 
     def trim(self):
         '''Trim adapters and bad reads'''
-        self.shell(f"{self.aliases['trim']} PE -threads 8 {self.a.ExpDir}{self.a.SeqName}_1_filt.fastq {self.a.ExpDir}{self.a.SeqName}_2_filt.fastq {self.a.ExpDir}{self.a.SeqName}_1_clean.fastq {self.a.ExpDir}{self.a.SeqName}_1_trimmings.fq {self.a.ExpDir}{self.a.SeqName}_2_clean.fastq {self.a.ExpDir}{self.a.SeqName}_2_trimmings.fq ILLUMINACLIP:{self.a.AdaptP}:2:10:7:1:true MINLEN:80")
+        run_trim(self.a, trim_path=self.aliases["trim"], api_entry=False)
 
     def do_map(self):
         '''Use BWA and Samtools to map reads from each sample to targets'''
@@ -67,9 +68,9 @@ class E2eRunner:
     def main(self):
         '''Entrypoint'''
         self.initiate_aliases()
-        self.run_kraken()
+        # self.run_kraken()
         # self.filter_keep_reads()
-        # self.trim()
+        self.trim()
         # self.do_map()
         # self.count_mapped()
         # self.analysis()
@@ -78,7 +79,7 @@ class E2eRunner:
 
 if __name__ == "__main__":
     '''Example input
-    python3 app/end_to_end_script.py -ExpDir data/ -SeqName ERR10812890 -RefStem rmlst_virus_extra_ercc_2018.fasta -PostFilt True -Samples data/samples.csv -Probes data/probelengths_rmlst_virus_extra_ercc.csv
+    python3 -m app.end_to_end_script -ExpDir data/ -SeqName ERR10812890 -RefStem rmlst_virus_extra_ercc_2018.fasta -PostFilt True -Samples data/samples.csv -Probes data/probelengths_rmlst_virus_extra_ercc.csv
     '''
     cls = E2eRunner()
     cls.main()
