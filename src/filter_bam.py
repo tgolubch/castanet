@@ -27,6 +27,7 @@ if __name__=='__main__':
         reads_to_drop = pd.read_csv(sys.argv[2])
     except FileNotFoundError as ex:
         raise SystemExit(f"Couldn't find reads to drop file: {sys.argv[2]}. Did your run generate one?")
+    
     reads_to_drop = reads_to_drop[reads_to_drop.sampleid==sampleid].set_index(['target_id','startpos','maplen'])
     for l in sys.stdin:
         # output header as is

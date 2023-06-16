@@ -35,13 +35,23 @@ class Data_Probes(BaseModel):
 class Data_ExpName(BaseModel):
     ExpName: str = Query('myexperiment',
                          description="Name your experiment/batch")
+    
+class Data_KrakenDir(BaseModel):
+    KrakenDbDir: DirectoryPath = Query('kraken2_human_db/',
+                                     description="Path to Kraken2 database for filtering human/other unwanted species reads.")
+    
+class Data_NThreads(BaseModel):
+    NThreads: int = Query(4,
+                                     description="Number of threads to doing parallel jobs on, with supported dependencies. Cannot exceed n logical CPU cores.")
+
 
 '''Endpoint objects'''
 
-class E2e_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AdaptP, Data_RefStem, Data_PostFilt, Data_Probes):
+class E2e_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AdaptP, Data_RefStem, 
+                Data_PostFilt, Data_Probes, Data_KrakenDir, Data_NThreads):
     ...
 
-class Preprocess_data(Data_ExpDir, Data_SeqName, Data_ExpName):
+class Preprocess_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_KrakenDir, Data_NThreads):
     ...
 
 class Filter_keep_reads_data(Data_ExpDir, Data_SeqName, Data_ExpName):

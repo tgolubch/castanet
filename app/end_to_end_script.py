@@ -1,5 +1,6 @@
 import subprocess as sp
 import argparse 
+from app.src.preprocess import run_kraken
 
 class E2eRunner:
     '''Complete pipeline using functionality of original scripts. See Readme from original repo.
@@ -36,7 +37,8 @@ class E2eRunner:
     
     def run_kraken(self):
         '''Call Kraken2 to remove unwanted reads'''
-        self.shell(f'kraken2 --db kraken2_human_db/ --threads 4 {self.a.ExpDir}{self.a.SeqName}_1.fastq.gz > {self.a.ExpDir}{self.a.SeqName}_1.kraken')
+        self.a["NThreds"], self.a["KrakenDbDir"] = 4, "kraken2_human_db/"
+        run_kraken(self.a)
 
     def filter_keep_reads(self):
         '''Filter reads using Castanet'''
@@ -46,7 +48,7 @@ class E2eRunner:
         '''Trim adapters and bad reads'''
         self.shell(f"{self.aliases['trim']} PE -threads 8 {self.a.ExpDir}{self.a.SeqName}_1_filt.fastq {self.a.ExpDir}{self.a.SeqName}_2_filt.fastq {self.a.ExpDir}{self.a.SeqName}_1_clean.fastq {self.a.ExpDir}{self.a.SeqName}_1_trimmings.fq {self.a.ExpDir}{self.a.SeqName}_2_clean.fastq {self.a.ExpDir}{self.a.SeqName}_2_trimmings.fq ILLUMINACLIP:{self.a.AdaptP}:2:10:7:1:true MINLEN:80")
 
-    def map(self):
+    def do_map(self):
         '''Use BWA and Samtools to map reads from each sample to targets'''
         self.shell(f"{self.aliases['bwa']} index {self.a.ExpDir}{self.a.RefStem}")
         self.shell(f"{self.aliases['bwa']} mem {self.a.ExpDir}{self.a.RefStem} {self.a.ExpDir}{self.a.SeqName}_[12]_clean.fastq | samtools view -F4 -Sb - | samtools sort - 1> {self.a.ExpDir}${self.a.SeqName}.bam")
@@ -69,7 +71,7 @@ class E2eRunner:
         self.run_kraken()
         self.filter_keep_reads()
         self.trim()
-        self.map()
+        self.do_map()
         self.count_mapped()
         self.analysis()
         if self.a.PostFilt:
