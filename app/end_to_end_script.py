@@ -42,7 +42,7 @@ class E2eRunner:
 
     def filter_keep_reads(self):
         '''Filter reads using Castanet'''
-        self.shell(f"python3 src/filter_keep_reads.py -i {self.a.ExpDir}{self.a.SeqName}_[12].fastq.gz -k {self.a.ExpDir}{self.a.SeqName}_1.kraken --xT Homo,Alteromonas,Achromobacter -x 1969841 --suffix filt")
+        self.shell(f"python3 src/filter_keep_reads.py -i {self.a.ExpDir}{self.a.SeqName}_[12].fastq.gz -k {self.a.ExpDir}{self.a.SeqName}_1.kraken --xT Homo,Alteromonas,Achromobacter -x 1969841 --lineage data/ncbi_lineages_2023-06-15.csv.gz")
 
     def trim(self):
         '''Trim adapters and bad reads'''

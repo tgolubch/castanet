@@ -1,6 +1,6 @@
 from fastapi import Query
-from typing import Union, Literal
-from pydantic import BaseModel, Field, FilePath, DirectoryPath
+from typing import Union, Literal, Optional
+from pydantic import BaseModel, Field, FilePath, DirectoryPath, validator
 
 '''Primitives'''
 
@@ -44,17 +44,32 @@ class Data_NThreads(BaseModel):
     NThreads: int = Query(4,
                                      description="Number of threads to doing parallel jobs on, with supported dependencies. Cannot exceed n logical CPU cores.")
 
+class Data_FilterFilters(BaseModel):
+    LineageFile: Union[None, str] = Query('data/ncbi_lineages_2023-06-15.csv.gz',
+                                      description="(OPTIONAL) Path to CSV file containing lineages of all NCBI taxa.")
+
+    ExcludeIds: Union[None, str] = Query("Delete this line if not using",
+                                      description="(OPTIONAL) Exclude these NCBI TaxID/s from filter keep reads step. Comma separate without spaces. Set to 9606 to exclude Human.")
+    
+    RetainIds: Union[None, str] = Query("Delete this line if not using",
+                                      description="(OPTIONAL) Exclude these NCBI TaxID/s from filter keep reads step. Comma separate without spaces.")
+
+    RetainNames: Union[None, str] = Query("Delete this line if not using",
+                                      description="(OPTIONAL) Retain these species names from filter keep reads step. Comma separate without spaces. Will be ignored if no Linneage file specified.")
+
+    ExcludeNames: Union[None, str] = Query("Delete this line if not using",
+                                      description="(OPTIONAL) Exclude these species names from filter keep reads step. Comma separate without spaces. Will be ignored if no Linneage file specified.")
 
 '''Endpoint objects'''
 
 class E2e_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AdaptP, Data_RefStem, 
-                Data_PostFilt, Data_Probes, Data_KrakenDir, Data_NThreads):
+                Data_PostFilt, Data_Probes, Data_KrakenDir, Data_NThreads, Data_FilterFilters):
     ...
 
 class Preprocess_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_KrakenDir, Data_NThreads):
     ...
 
-class Filter_keep_reads_data(Data_ExpDir, Data_SeqName, Data_ExpName):
+class Filter_keep_reads_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_FilterFilters):
     ...
 
 class Trim_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AdaptP):
