@@ -17,7 +17,7 @@ def stoperr(s, errcode=1):
     '''Call sys exit on finish or err'''
     status = 'Finished' if not errcode else 'Error'
     sys.stderr.write(f'  {status}: {s}\n')
-    raise SystemError(errcode)
+    raise SystemError(f'  {status}: {s}\nErrcode: {errcode}')
 
 def read_line(h):
     '''Parse line from input file'''

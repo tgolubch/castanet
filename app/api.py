@@ -1,6 +1,7 @@
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
 from app.src.preprocess import run_kraken
+from app.src.filter_keep_reads import FilterKeepReads
 from app.utils.api_classes import (E2e_data, Preprocess_data, Filter_keep_reads_data,
                                     Trim_data, Mapping_data, Count_map_data, Analysis_data,
                                     Post_filter_data, Data_KrakenDir)
@@ -55,8 +56,8 @@ async def read_root():
 @app.post("/end_to_end/", tags=["End to end pipeline"])
 async def end_to_end(payload: E2e_data):
     payload = jsonable_encoder(payload)
-    run_kraken()
-    # do_filter_keep_reads()
+    run_kraken(payload)
+    do_filter_keep_reads(payload)
     # do_trim()
     # do_map()
     # do_count_mapped()
@@ -74,8 +75,12 @@ async def preprocess(payload: Preprocess_data):
 @app.post("/filter_keep_reads/", tags=["Individual pipeline functions"])
 async def filter_keep_reads(payload: Filter_keep_reads_data):
     payload = jsonable_encoder(payload)
-    # do_filter_keep_reads()
+    do_filter_keep_reads(payload)
     return "Task complete. See terminal output for details."
+
+def do_filter_keep_reads(payload):
+    cls = FilterKeepReads(payload)
+    cls.main()
 
 @app.post("/trim_data/", tags=["Individual pipeline functions"])
 async def trim_data(payload: Trim_data):

@@ -48,7 +48,7 @@ class Data_FilterFilters(BaseModel):
     LineageFile: Union[None, str] = Query('data/ncbi_lineages_2023-06-15.csv.gz',
                                       description="(OPTIONAL) Path to CSV file containing lineages of all NCBI taxa.")
 
-    ExcludeIds: Union[None, str] = Query("Delete this line if not using",
+    ExcludeIds: Union[None, str] = Query("1969841",
                                       description="(OPTIONAL) Exclude these NCBI TaxID/s from filter keep reads step. Comma separate without spaces. Set to 9606 to exclude Human.")
     
     RetainIds: Union[None, str] = Query("Delete this line if not using",
@@ -57,7 +57,7 @@ class Data_FilterFilters(BaseModel):
     RetainNames: Union[None, str] = Query("Delete this line if not using",
                                       description="(OPTIONAL) Retain these species names from filter keep reads step. Comma separate without spaces. Will be ignored if no Linneage file specified.")
 
-    ExcludeNames: Union[None, str] = Query("Delete this line if not using",
+    ExcludeNames: Union[None, str] = Query("Homo,Alteromonas,Achromobacter",
                                       description="(OPTIONAL) Exclude these species names from filter keep reads step. Comma separate without spaces. Will be ignored if no Linneage file specified.")
 
 '''Endpoint objects'''
