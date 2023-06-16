@@ -6,7 +6,7 @@ from collections import deque
 from app.utils.shell_cmds import loginfo, read_line
 from app.utils.argparsers import parse_args_filter_keep_reads
 from app.utils.error_handlers import error_handler_filter_keep_reads
-
+from app.utils.system_messages import end_sec_print
 
 class FilterKeepReads:
     ''' 
@@ -68,6 +68,8 @@ class FilterKeepReads:
             with open(outpath, 'w', buffering=8192) as out_h:
                 num_reads = self.filter_Reads(inpath, out_h)
             loginfo(f'Wrote {num_reads} reads to {outpath}.')
+        
+        end_sec_print("Filter keep reads complete.")
 
 
 

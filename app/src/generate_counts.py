@@ -1,4 +1,5 @@
 from app.utils.shell_cmds import shell
+from app.utils.system_messages import end_sec_print
 
 def run_counts(p, api_entry=True):
     if not api_entry:
@@ -8,5 +9,5 @@ def run_counts(p, api_entry=True):
         }
     else:
         p["ExpDir"] = f"{p['ExpDir']}/"
-    shell(f"""for BamFilePath in $(ls {p['ExpDir']}/*.bam); do BamPath=$BamFilePath; BamName=$(basename "BamPath%%.bam"); BamName=$(sed s'/_dedup//' <<< ${{BamName}}); samtools view -F2048 -F4 ${{BamPath}} | python3 src/parse_bam_positions.py {p['SeqName']} | sort | uniq -c | sed s'/ /,/'g | sed s'/^[,]*//'g; done > {p['ExpDir']}PosCounts.csv""")
-    print("\nINFO: Counts generated, no errors reported by Samtools\n")
+    shell(f"""for BamFilePath in $(ls {p['ExpDir']}/*.bam); do BamPath=$BamFilePath; BamName=$(basename "BamPath%%.bam"); BamName=$(sed s'/_dedup//' <<< ${{BamName}}); samtools view -F2048 -F4 ${{BamPath}} | python3 -m app.src.parse_bam -Mode parse -SeqName {p['SeqName']} | sort | uniq -c | sed s'/ /,/'g | sed s'/^[,]*//'g; done > {p['ExpDir']}PosCounts.csv""")
+    end_sec_print("INFO: Counts generated")

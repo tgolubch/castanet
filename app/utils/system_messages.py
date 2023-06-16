@@ -12,5 +12,8 @@ O       o O       o O       o O       o O
 | o   O | | o   O | | o   O | | o   O | |
 o       O o       O o       O O       O o
 (c) @Tgolubch, https://doi.org/10.1101/716902
-Py3 App & additions by @mayne941
+    Py3 App & additions by @mayne941
 """)
+
+def end_sec_print(msg):
+    print(f"\n{'*'*30}\n{msg}\n{'*'*30}\n")

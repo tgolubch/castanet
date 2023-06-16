@@ -57,7 +57,6 @@ class Parse_bam_positions():
             else:
                 return
 
-
     def main(self):
         '''Entrypoint. Multi functional across generate counts and post filter.'''
         error_handler_parse_bam_positions(sys.argv)

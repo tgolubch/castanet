@@ -1,4 +1,5 @@
 from app.utils.shell_cmds import shell
+from app.utils.system_messages import end_sec_print
 
 def run_trim(p, trim_path='java -jar ./Trimmomatic-0.39/trimmomatic-0.39.jar', api_entry=True):
     '''Call BWA trim CLI tool'''
@@ -12,3 +13,4 @@ def run_trim(p, trim_path='java -jar ./Trimmomatic-0.39/trimmomatic-0.39.jar', a
     else: 
         p["ExpDir"] = f"{p['ExpDir']}/"
     shell(f"{trim_path} PE -threads {p['NThreads']} {p['ExpDir']}{p['SeqName']}_1_filt.fastq {p['ExpDir']}{p['SeqName']}_2_filt.fastq {p['ExpDir']}{p['SeqName']}_1_clean.fastq {p['ExpDir']}{p['SeqName']}_1_trimmings.fq {p['ExpDir']}{p['SeqName']}_2_clean.fastq {p['ExpDir']}{p['SeqName']}_2_trimmings.fq ILLUMINACLIP:{p['AdaptP']}:2:10:7:1:true MINLEN:80")
+    end_sec_print("INFO: Trimming complete.")

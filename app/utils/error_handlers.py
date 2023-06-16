@@ -1,4 +1,4 @@
-import os
+import os, sys
 import subprocess as sp
 from collections import deque
 
@@ -59,3 +59,6 @@ def error_handler_filter_keep_reads(argies):
 
     return argies["o"], argies["ExcludeIds"], argies["RetainIds"]
 
+def error_handler_parse_bam_positions(argvs):
+    if len(argvs) < 2 or '-h' in argvs:
+        stoperr(f'Usage: samtools view MyBamFile | {argvs[0]} \n\n')
