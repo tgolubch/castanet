@@ -1,5 +1,10 @@
 import subprocess as sp
 import argparse 
+from app.src.preprocess import run_kraken
+from app.src.trim_adapters import run_trim
+from app.src.map_reads_to_ref import run_map
+from app.src.generate_counts import run_counts
+from app.src.post_filter import run_post_filter
 
 class E2eRunner:
     '''Complete pipeline using functionality of original scripts. See Readme from original repo.
@@ -15,7 +20,7 @@ class E2eRunner:
         sp.run(args, text=True,shell=True, executable=executable)
 
     def initiate_aliases(self):
-        '''Load aliases into shell'''
+        '''Load aliases for shell cmds'''
         aliases = {}
         aliases["trim"] = 'java -jar ./Trimmomatic-0.39/trimmomatic-0.39.jar'
         aliases["bwa"]  = './bwa-mem2-2.2.1_x64-linux/bwa-mem2'
@@ -34,50 +39,21 @@ class E2eRunner:
         p.add_argument( '-Probes',  default="",       required=False,  help="CSV file containing probe length mappings. Absolute path required")
         return p.parse_args()
     
-    def run_kraken(self):
-        '''Call Kraken2 to remove unwanted reads'''
-        self.shell(f'kraken2 --db kraken2_human_db/ --threads 4 {self.a.ExpDir}{self.a.SeqName}_1.fastq.gz > {self.a.ExpDir}{self.a.SeqName}_1.kraken')
-
-    def filter_keep_reads(self):
-        '''Filter reads using Castanet'''
-        self.shell(f"python3 src/filter_keep_reads.py -i {self.a.ExpDir}{self.a.SeqName}_[12].fastq.gz -k {self.a.ExpDir}{self.a.SeqName}_1.kraken --xT Homo,Alteromonas,Achromobacter -x 1969841 --suffix filt")
-
-    def trim(self):
-        '''Trim adapters and bad reads'''
-        self.shell(f"{self.aliases['trim']} PE -threads 8 {self.a.ExpDir}{self.a.SeqName}_1_filt.fastq {self.a.ExpDir}{self.a.SeqName}_2_filt.fastq {self.a.ExpDir}{self.a.SeqName}_1_clean.fastq {self.a.ExpDir}{self.a.SeqName}_1_trimmings.fq {self.a.ExpDir}{self.a.SeqName}_2_clean.fastq {self.a.ExpDir}{self.a.SeqName}_2_trimmings.fq ILLUMINACLIP:{self.a.AdaptP}:2:10:7:1:true MINLEN:80")
-
-    def map(self):
-        '''Use BWA and Samtools to map reads from each sample to targets'''
-        self.shell(f"{self.aliases['bwa']} index {self.a.ExpDir}{self.a.RefStem}")
-        self.shell(f"{self.aliases['bwa']} mem {self.a.ExpDir}{self.a.RefStem} {self.a.ExpDir}{self.a.SeqName}_[12]_clean.fastq | samtools view -F4 -Sb - | samtools sort - 1> {self.a.ExpDir}${self.a.SeqName}.bam")
-
-    def count_mapped(self):
-        '''Generate CSV of counts for each uniq mapped seq'''
-        self.shell(f"""for BamFilePath in $(ls data/*.bam); do BamPath=$BamFilePath; BamName=$(basename "BamPath%%.bam"); BamName=$(sed s'/_dedup//' <<< ${{BamName}}); samtools view -F2048 -F4 ${{BamPath}} | python3 src/parse_bam_positions.py {self.a.SeqName} | sort | uniq -c | sed s'/ /,/'g | sed s'/^[,]*//'g; done > {self.a.ExpDir}PosCounts.csv""")
-
-    def analysis(self):
-        '''Call main Castanet analysis script'''
-        self.shell(f"python3 src/process_pool_grp.py -i {self.a.ExpDir}PosCounts.csv --samples {self.a.Samples} -p {self.a.Probes} -b {self.a.ExpName}")
-
-    def post_filter(self):
-        '''OPT: Filter BAM files of interest to remove reads marked as bad'''
-        self.shell(f"samtools view -h {self.a.ExpDir}{self.a.SeqName}.bam | python3 src/filter_bam.py {self.a.ExpDir}{self.a.SeqName} {self.a.ExpName}_reads_to_drop.csv")
-
     def main(self):
         '''Entrypoint'''
-        self.initiate_aliases()
-        self.run_kraken()
-        self.filter_keep_reads()
-        self.trim()
-        self.map()
-        self.count_mapped()
-        self.analysis()
-        if self.a.PostFilt:
-            self.post_filter()
+        # self.initiate_aliases()
+        # run_kraken(self.a, api_entry=False)
+        # self.shell(f"python3 -m app.src.filter_keep_reads -i {self.a.ExpDir}{self.a.SeqName}_[12].fastq.gz -k {self.a.ExpDir}{self.a.SeqName}_1.kraken --xT Homo,Alteromonas,Achromobacter -x 1969841 --lineage data/ncbi_lineages_2023-06-15.csv.gz")
+        # run_trim(self.a, trim_path=self.aliases["trim"], api_entry=False)
+        # run_map(self.a, bwa_path=self.aliases["bwa"], api_entry=False)
+        # run_counts(self.a, api_entry=False)
+        self.shell(f"python3 src/process_pool_grp.py -i {self.a.ExpDir}PosCounts.csv --samples {self.a.Samples} -p {self.a.Probes} -b {self.a.ExpName}")
+        # if self.a.PostFilt:
+        #     run_post_filter(self.a, api_entry=False)
 
 if __name__ == "__main__":
     '''Example input
-    python3 app/end_to_end_script.py -ExpDir data/ -SeqName ERR10812890 -RefStem rmlst_virus_extra_ercc_2018.fasta -PostFilt True -Samples data/samples.csv -Probes data/probelengths_rmlst_virus_extra_ercc.csv
+    python3 -m app.end_to_end_script -ExpDir data/ -SeqName ERR10812890 -RefStem rmlst_virus_extra_ercc_2018.fasta -PostFilt True -Samples data/samples.csv -Probes data/probelengths_rmlst_virus_extra_ercc.csv
     '''
     cls = E2eRunner()
     cls.main()
