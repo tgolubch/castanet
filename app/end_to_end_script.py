@@ -37,12 +37,11 @@ class E2eRunner:
     
     def run_kraken(self):
         '''Call Kraken2 to remove unwanted reads'''
-        self.a["NThreds"], self.a["KrakenDbDir"] = 4, "kraken2_human_db/"
-        run_kraken(self.a)
+        run_kraken(self.a, api_entry=False)
 
     def filter_keep_reads(self):
         '''Filter reads using Castanet'''
-        self.shell(f"python3 src/filter_keep_reads.py -i {self.a.ExpDir}{self.a.SeqName}_[12].fastq.gz -k {self.a.ExpDir}{self.a.SeqName}_1.kraken --xT Homo,Alteromonas,Achromobacter -x 1969841 --lineage data/ncbi_lineages_2023-06-15.csv.gz")
+        self.shell(f"python3 -m app.src.filter_keep_reads -i {self.a.ExpDir}{self.a.SeqName}_[12].fastq.gz -k {self.a.ExpDir}{self.a.SeqName}_1.kraken --xT Homo,Alteromonas,Achromobacter -x 1969841 --lineage data/ncbi_lineages_2023-06-15.csv.gz")
 
     def trim(self):
         '''Trim adapters and bad reads'''
@@ -69,13 +68,13 @@ class E2eRunner:
         '''Entrypoint'''
         self.initiate_aliases()
         self.run_kraken()
-        self.filter_keep_reads()
-        self.trim()
-        self.do_map()
-        self.count_mapped()
-        self.analysis()
-        if self.a.PostFilt:
-            self.post_filter()
+        # self.filter_keep_reads()
+        # self.trim()
+        # self.do_map()
+        # self.count_mapped()
+        # self.analysis()
+        # if self.a.PostFilt:
+        #     self.post_filter()
 
 if __name__ == "__main__":
     '''Example input
