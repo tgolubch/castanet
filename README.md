@@ -1,4 +1,18 @@
-# Castanet fork - Python 3 implementation 
+```
+ _____           _                   _   
+/  __ \         | |                 | |  
+| /  \/ __ _ ___| |_ __ _ _ __   ___| |_ 
+| |    / _` / __| __/ _` | '_ \ / _ \ __|
+| \__/\ (_| \__ \ || (_| | | | |  __/ |_ 
+ \____/\__,_|___/\__\__,_|_| |_|\___|\__|
+                                         
+O       o O       o O       o O       o O
+| O   o | | O   o | | O   o | | O   o | |
+| | O | | | | O | | | | O | | | | O | | |
+| o   O | | o   O | | o   O | | o   O | |
+o       O o       O o       O O       O o
+```
+
 Forked from https://github.com/tgolubch/castanet, originally described in https://doi.org/10.1101/716902
 
 This implementation is written in Python 3 and has additional convenience features, such as end-to-end workflows, optimizations, automated installation of dependencies and an API compatible with containerization.

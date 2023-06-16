@@ -2,6 +2,8 @@ import subprocess as sp
 import argparse 
 from app.src.preprocess import run_kraken
 from app.src.trim_adapters import run_trim
+from app.src.map_reads_to_ref import run_map
+from app.src.generate_counts import run_counts
 
 class E2eRunner:
     '''Complete pipeline using functionality of original scripts. See Readme from original repo.
@@ -50,12 +52,11 @@ class E2eRunner:
 
     def do_map(self):
         '''Use BWA and Samtools to map reads from each sample to targets'''
-        self.shell(f"{self.aliases['bwa']} index {self.a.ExpDir}{self.a.RefStem}")
-        self.shell(f"{self.aliases['bwa']} mem {self.a.ExpDir}{self.a.RefStem} {self.a.ExpDir}{self.a.SeqName}_[12]_clean.fastq | samtools view -F4 -Sb - | samtools sort - 1> {self.a.ExpDir}${self.a.SeqName}.bam")
+        run_map(self.a, bwa_path=self.aliases["bwa"], api_entry=False)
 
     def count_mapped(self):
         '''Generate CSV of counts for each uniq mapped seq'''
-        self.shell(f"""for BamFilePath in $(ls data/*.bam); do BamPath=$BamFilePath; BamName=$(basename "BamPath%%.bam"); BamName=$(sed s'/_dedup//' <<< ${{BamName}}); samtools view -F2048 -F4 ${{BamPath}} | python3 src/parse_bam_positions.py {self.a.SeqName} | sort | uniq -c | sed s'/ /,/'g | sed s'/^[,]*//'g; done > {self.a.ExpDir}PosCounts.csv""")
+        run_counts(self.a, api_entry=False)
 
     def analysis(self):
         '''Call main Castanet analysis script'''
@@ -68,11 +69,11 @@ class E2eRunner:
     def main(self):
         '''Entrypoint'''
         self.initiate_aliases()
-        # self.run_kraken()
-        # self.filter_keep_reads()
+        self.run_kraken()
+        self.filter_keep_reads()
         self.trim()
-        # self.do_map()
-        # self.count_mapped()
+        self.do_map()
+        self.count_mapped()
         # self.analysis()
         # if self.a.PostFilt:
         #     self.post_filter()

@@ -1,8 +1,11 @@
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
+from app.utils.system_messages import banner
 from app.src.preprocess import run_kraken
 from app.src.filter_keep_reads import FilterKeepReads
 from app.src.trim_adapters import run_trim
+from app.src.map_reads_to_ref import run_map
+from app.src.generate_counts import run_counts
 from app.utils.api_classes import (E2e_data, Preprocess_data, Filter_keep_reads_data,
                                     Trim_data, Mapping_data, Count_map_data, Analysis_data,
                                     Post_filter_data)
@@ -29,6 +32,8 @@ tags_metadata = [
         "description": "Developer tools"
     }
 ]
+
+banner()
 
 app = FastAPI(
     title="Castanet",
@@ -60,8 +65,8 @@ async def end_to_end(payload: E2e_data):
     run_kraken(payload)
     do_filter_keep_reads(payload)
     run_trim(payload)
-    # do_map()
-    # do_count_mapped()
+    run_map(payload)
+    run_counts(payload)
     # do_analysis()
     # if payload["PostFilt"]:
     #   do_post_filt()
@@ -92,13 +97,13 @@ async def trim_data(payload: Trim_data):
 @app.post("/mapping/", tags=["Individual pipeline functions"])
 async def mapping(payload: Mapping_data):
     payload = jsonable_encoder(payload)
-    # do_map()
+    run_map(payload)
     return "Task complete. See terminal output for details."
 
 @app.post("/count_mapped/", tags=["Individual pipeline functions"])
 async def count_mapped(payload: Count_map_data):
     payload = jsonable_encoder(payload)
-    # do_count_mapped()
+    run_counts(payload)
     return "Task complete. See terminal output for details."
 
 @app.post("/analysis/", tags=["Individual pipeline functions"])

@@ -1,6 +1,7 @@
 from app.utils.shell_cmds import shell
 
 def run_trim(p, trim_path='java -jar ./Trimmomatic-0.39/trimmomatic-0.39.jar', api_entry=True):
+    '''Call BWA trim CLI tool'''
     if not api_entry:
         p = {
             "ExpDir": p.ExpDir,
