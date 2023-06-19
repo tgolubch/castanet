@@ -43,10 +43,10 @@ class Data_FilterFilters(BaseModel):
     ExcludeIds: Union[None, str] = Query("1969841",
                                       description="(OPTIONAL) Exclude these NCBI TaxID/s from filter keep reads step. Comma separate without spaces. Set to 9606 to exclude Human.")
     
-    RetainIds: Union[None, str] = Query("Delete this line if not using",
+    RetainIds: Union[None, str] = Query("",
                                       description="(OPTIONAL) Exclude these NCBI TaxID/s from filter keep reads step. Comma separate without spaces.")
 
-    RetainNames: Union[None, str] = Query("Delete this line if not using",
+    RetainNames: Union[None, str] = Query("",
                                       description="(OPTIONAL) Retain these species names from filter keep reads step. Comma separate without spaces. Will be ignored if no Linneage file specified.")
 
     ExcludeNames: Union[None, str] = Query("Homo,Alteromonas,Achromobacter",
@@ -59,9 +59,9 @@ class Data_AnalysisExtras(BaseModel):
                          description="CSV file containing sample data for annotations during analysis phase. Absolute path required.")
     KeepDups: bool = Query(True,
                            description='(OPTIONAL) If true, do not reassign duplicates to the sample with the majority in each duplicate cluster (Default: True).')
-    Clin: Optional[str] = Query("Delete this line if not using",
+    Clin: Optional[str] = Query("",
                                 description='(OPTIONAL) Path to CSV file containing clinical data (must have at least following fields: pt, clin_int; the field "sampleid" if present will be ignored). Other fields will be ignored.')
-    DepthInf: str = Query("Delete this line if not using",
+    DepthInf: str = Query("",
                           description='(OPTIONAL, For regenerating full CSV with new clinical info): Path to previously generated CSV file of read depth per position for each probe, for all samples in this batch. Must contain the following fields: sampleid, target_id, depth_mean, depth_std, depth_25pc, depth_median, depth_75pc, prop_target_covered, prop_target_covered_mindepth2, prop_target_covered_mindepth5, prop_target_covered_mindepth10, udepth_mean, udepth_std, udepth_25pc, udepth_median, udepth_75pc, uprop_target_covered, uprop_target_covered_mindepth2, uprop_target_covered_mindepth5, uprop_target_covered_mindepth10')
 
 '''Endpoint objects'''
