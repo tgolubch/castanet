@@ -1,11 +1,11 @@
 ```
- _____           _                   _   
-/  __ \         | |                 | |  
-| /  \/ __ _ ___| |_ __ _ _ __   ___| |_ 
+ _____           _                   _
+/  __ \         | |                 | |
+| /  \/ __ _ ___| |_ __ _ _ __   ___| |_
 | |    / _` / __| __/ _` | '_ \ / _ \ __|
-| \__/\ (_| \__ \ || (_| | | | |  __/ |_ 
+| \__/\ (_| \__ \ || (_| | | | |  __/ |_
  \____/\__,_|___/\__\__,_|_| |_|\___|\__|
-                                         
+
 O       o O       o O       o O       o O
 | O   o | | O   o | | O   o | | O   o | |
 | | O | | | | O | | | | O | | | | O | | |
@@ -22,7 +22,7 @@ We assume the user has installed the following. See attached links for guidance 
 1. A Linux-like environment: tested on Ubuntu 22.04 and Windows Subsystems Linux (WSL2) Ubuntu 22.04. User experience with Windows/Mac will vary.
 1. Conda (for installing external dependency, Kraken2). See https://docs.conda.io/projects/conda/en/latest/user-guide/install/linux.html
 1. Python > 3.7 <= 3.12, ideally installed specifically to a Conda environment made for running Castanet.
-1. Java runtime environment (for running external dependency, Trimmomatic). See https://www.java.com/en/download/manual.jsp 
+1. Java runtime environment (for running external dependency, Trimmomatic). See https://www.java.com/en/download/manual.jsp
 
 ## Dependencies
 We include a shell script for installing all other dependencies (tested on Ubuntu 22.04). These may be installed via:
@@ -68,11 +68,19 @@ N.B. some optional parameters from the original scripts are hard-coded. Full and
 1. Install dependencies with ```sudo bash install_deps.sh```
 1. Call end-to-end script with ```python3 app/end_to_end_script.py -ExpDir data/ -SeqName mysample -RefStem myrefstem.fasta -PostFilt True -Samples data/samples.csv -Probes data/probes.csv```
 
+# Container setup
+An example dockerfile and build/run scripts are included for guidance only.
+
+1. Install Docker ```https://docs.docker.com/get-docker/```
+1. Build and run container ```bash build.sh && bash run.sh```
+
+Users are encouraged to consult a system admin if they experience issues with building, accessing or deploying containers.
+
 # Function descriptions
 ## Input arguments common to multiple functions
 1. Experiment directory [ExpDir]. Folder where data is stored and may be saved.
 1. Experiment name [ExpName]. Name used to prefix final output.
-1. Sequence name [SeqName]. name common to your input sequences, without prefixes, suffixes or file extensions. N.b. we assume your data will have the following format: {ExpDir}{SeqName}_1.fasta.gz, {ExpDir}{SeqName}_2.fasta.gz. 
+1. Sequence name [SeqName]. name common to your input sequences, without prefixes, suffixes or file extensions. N.b. we assume your data will have the following format: {ExpDir}{SeqName}_1.fasta.gz, {ExpDir}{SeqName}_2.fasta.gz.
 1. Threads [NThreads]. Number of individual processes to be run concurrently.
 
 ## Preprocess
@@ -103,7 +111,7 @@ Uses Trimmomatic to remove low quality reads and sequencer adapters. We assume t
 *Input args*
 1. Adapters file [AdaptP]: Path to .fa file containing adapter sequences. For convenience, we have included a file in the /data/ directory containing several commonly-used adapters, but the Trimmomatic tool will also download a number of individual files specific to sequencing technique in its root directory.
 
-*Output* 
+*Output*
 1. Trimmed files: {ExpDir}{SeqName}_[12]_clean.fastq
 1. Trimmings files: {ExpDir}{SeqName}_[12]_trimmings.fastq
 
@@ -117,7 +125,7 @@ Uses BWA algorithm to map reads against reference sequences. Initial step is to 
 1. Compressed alignment map file: {ExpDir}{SeqName}.bam
 
 ## Generate counts
-Iterate over bam files in your experiment directory (N.b. this is a batching function! Ensure you know which files are present in this directory before using!), decrypt to SAM format and print to terminal; output are piped directly to Castanet parse_bam functions to produce a CSV file containing position counts. Parse BAM functions are multi functional - this entrypoint specifies to do only the "parse" functions, which generate counts for uniquely mapped sequences identified. Functions can differentiate between properly paired matches (with a suitably-long match length) and badly paired but sufficiently long sequence match. 
+Iterate over bam files in your experiment directory (N.b. this is a batching function! Ensure you know which files are present in this directory before using!), decrypt to SAM format and print to terminal; output are piped directly to Castanet parse_bam functions to produce a CSV file containing position counts. Parse BAM functions are multi functional - this entrypoint specifies to do only the "parse" functions, which generate counts for uniquely mapped sequences identified. Functions can differentiate between properly paired matches (with a suitably-long match length) and badly paired but sufficiently long sequence match.
 
 *Input args*
 (No non-generic input)
@@ -153,7 +161,7 @@ Output of analysis (misassigned reads) may be used to post (downstream) filter i
 *Input args*
 (No non-generic input)
 
-*Output* 
+*Output*
 1. Compressed alignment map file: {ExpDir}{SeqName}.bam
 
 # Dependency notes
@@ -163,18 +171,18 @@ We have included a lineage file in the repo for convenience. Users may generate 
 ``` https://github.com/zyxue/ncbitax2lin  ```
 
 ## Mapper
-Mapping is an essential process to Castanet, which involves comparing our experiment reads with a number of pre-defined reference sequences. We opt for bwa-mem2 for doing Burrows Wheeler alignment. 
+Mapping is an essential process to Castanet, which involves comparing our experiment reads with a number of pre-defined reference sequences. We opt for bwa-mem2 for doing Burrows Wheeler alignment.
 
 ```https://github.com/bwa-mem2/bwa-mem2```
 
-Castanet is not tested with original bwa, bowtie2 etc., but may be compatible. 
+Castanet is not tested with original bwa, bowtie2 etc., but may be compatible.
 
 ## Samtools
-Samtools is a collection of software libraries that provides a range of functions for interrogating NGS data, specifically in Sequence Alignment Map (SAM) format and the compressed Binary- (BAM) format. These functions include reading, writing and viewing the contents of these files. 
+Samtools is a collection of software libraries that provides a range of functions for interrogating NGS data, specifically in Sequence Alignment Map (SAM) format and the compressed Binary- (BAM) format. These functions include reading, writing and viewing the contents of these files.
 
 ```http://www.htslib.org/```
 
-## Trimmomatic 
+## Trimmomatic
 Trimming is an essential quality control process for removing sequence fragments that would contaminate our analyses. Specifically, we use Trimmomatic here to remove both low quality reads and our Illumina adapters (via MINLEN and ILLUMINACLIP functions).
 
 ```http://www.usadellab.org/cms/?page=trimmomatic```
@@ -189,9 +197,24 @@ Trimming is an essential quality control process for removing sequence fragments
 1. Refresh example experiment in readme to fit end to end workflow script
 1. Python scripts adapted to OOP practices for security and speed
 1. Unified API with end-to-end workflow endpoint
-
-## To do
 1. Git hooks for contributors
-1. Vectorization enhancements
-1. Containerize
-1. Unit tests
+1. Containerization
+
+# Guide for contributors
+
+Although forking is encouraged, we will only consider pull requests which address bugs and performance issues. Contributors will please configure pre-commit hooks to match ours, as detailed in the .pre-commit-config.yaml file.
+
+1. Install Python dependencies with ```pip install -r requirements.txt```
+1. Initialise pre-commit with ```pre-commit install```
+1. Initialize commitizen ```cz init```
+
+# Disclaimer
+The material embodied in this software is provided to you "as-is", “with all faults”, and without warranty of any kind, express, implied or otherwise, including without limitation, any warranty of fitness for a particular purpose, warranty of non-infringement, or warranties of any kind concerning the safety, suitability, lack of viruses, inaccuracies, or other harmful components of this software. There are inherent dangers in the use of any software, and you are solely responsible for determining whether this software is compatible with your equipment and other software installed on your equipment. You are convert_fasta_to_genbankalso solely responsible for the protection of your equipment and backup of your data, and the developers/providers will not be liable for any damages you may suffer in connection with using, modifying, or distributing this software. Without limiting the foregoing, the developers/providers make no warranty that: the software will meet your requirements; the software will be uninterrupted, timely, secure, or error-free; the results that may be obtained from the use of the software will be effective, accurate, or reliable; the quality of the software will meet your expectations; any errors in the software will be identified or corrected.
+
+Software and its documentation made available here could include technical or other mistakes, inaccuracies, or typographical errors. The developers/providers may make changes to the software or documentation made available here may be out of date, and the developers/providers make no commitment to update such materials.
+
+The developers/providers assume no responsibility for errors or omissions in the software or documentation available from here.
+
+In no event shall the developers/providers be liable to you or anyone else for any direct, special, incidental, indirect, or consequential damages of any kind, or any damages whatsoever, including without limitation, loss of data, loss of profit, loss of use, savings or revenue, or the claims of third parties, whether or not the developers/providers have been advised of the possibility of such damages and loss, however caused, and on any theory of liability, arising out of or in connection with the possession, use, or performance of this software.
+
+The use of this software is done at your own discretion and risk and with agreement that you will be solely responsible for any damage to your computer system, or networked devices, or loss of data that results from such activities. No advice or information, whether oral or written, obtained by you from the developers/providers shall create any warranty for the software.
