@@ -13,7 +13,7 @@ class Data_SeqName(BaseModel):
                           description="Base filename for your input sequences. Naming convention is mysequence_1, ..._2.")
 
 class Data_AdaptP(BaseModel):
-    AdaptP: str = Query('Trimmomatic-0.39/adapters/all.fa',
+    AdaptP: str = Query('data/all_adapters.fa',
                         description='Location of your Trimmomatic adapter sequences - may be in your Trimmomatic path, but a backup is in the data dir.')
 
 class Data_RefStem(BaseModel):
