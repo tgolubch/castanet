@@ -42,7 +42,7 @@ class Parse_bam_positions():
             return
 
     def filter_bam(self, l, reads_to_drop):
-        '''POST FILTER STAGE: '''
+        '''POST FILTER STAGE'''
         if l.startswith('@'):
             sys.stdout.write(l)
             return
