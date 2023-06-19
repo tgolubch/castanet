@@ -18,6 +18,3 @@ alias bwa="bwa-mem2-2.2.1_x64-linux/bwa-mem2"
 
 # Download samtools
 conda install -c bioconda samtools=1.9
-
-# Unlock permissions on repo bash file
-chmod +777 src/count_duplicates_single_bam_improper.sh

@@ -4,3 +4,6 @@ matplotlib==3.7.1
 pydantic==1.10.9
 fastapi==0.97.0
 uvicorn==0.18.3
+autopep8==2.0.2
+pre-commit==3.2.2
+Commitizen==3.3.0
