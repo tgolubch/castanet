@@ -90,7 +90,8 @@ class Analysis:
 
     def reassign_dups(self):
         ''' Reassign positional duplicates (reads with same start/end) to the sample with the highest count.
-        This should not be used with unique dual indexed samples, as relies on heavily oversequenced data. Useful to clean contaminated data.'''
+        This should NOT be used with unique dual indexed samples, as relies on heavily oversequenced data.
+        Regardless may be useful to clean contaminated data.'''
         loginfo('Reassaigning duplicates.')
         ttl_prededup_mapped_reads = self.df.groupby('sampleid').n.sum()
         grouped_prededup_mapped_reads = self.df.groupby(
@@ -207,9 +208,7 @@ class Analysis:
                     f'Mean amplification ratio for {probetype}: {amprate.mean()}')
 
                 '''Save arrays as CSV'''
-                if not os.path.isdir(f'{odir}/{sampleid}'):
-                    os.mkdir(f'{odir}/{sampleid}')
-                with open(f'{odir}/{sampleid}/{probetype}-{sampleid}_depth_by_pos.csv', 'a') as o:
+                with open(f'{odir}/{probetype}-{sampleid}_depth_by_pos.csv', 'a') as o:
                     np.savetxt(o, D, fmt='%d', newline=',')
                     o.write('\n')
                     np.savetxt(o, D1, fmt='%d', newline=',')
@@ -230,7 +229,7 @@ class Analysis:
                     except ValueError:
                         pass
                     plt.savefig(
-                        f'{odir}/{sampleid}/{probetype}-{sampleid}.pdf')
+                        f'{odir}/{probetype}-{sampleid}.pdf')
 
                 '''Build up dictionary of depth metrics for this sample and probetype'''
                 metrics[sampleid, probetype] = (g.n.sum(), g.n.count(), n_targets, n_genes, nmax_targets, nmax_genes, nmax_probetype, npos,
@@ -271,7 +270,12 @@ class Analysis:
                          'level_1': 'probetype'}, inplace=True)
 
             '''Add reads on target (rot)'''
-            rot = depth.groupby('sampleid').n_reads_all.sum().reset_index()
+            try:
+                rot = depth.groupby('sampleid').n_reads_all.sum().reset_index()
+            except:
+                stoperr(
+                    f'ERROR: Depth dataframe seems to be empty. Please check trimming and mapping steps completed successfully.')
+
             rot.rename(
                 columns={'n_reads_all': 'reads_on_target'}, inplace=True)
             depth = depth.merge(rot, on='sampleid', how='left')

@@ -52,16 +52,17 @@ def error_handler_filter_keep_reads(argies):
                 line = read_line(handle)
 
     '''Check NCBI TaxIDs to retain/exclude'''
-    try:
-        argies["ExcludeIds"] = (frozenset(argies["ExcludeIds"].split(
-            ',')) | frozenset(exclude_list)) - frozenset([''])
-    except:
-        stoperr(f'TaxID(s) {argies["ExcludeIds"]} invalid.')
-    try:
-        argies["retain"] = (frozenset(argies["RetainIds"].split(
-            ',')) | frozenset(retain_list)) - frozenset([''])
-    except:
-        stoperr(f'TaxID(s) {argies["RetainIds"]} invalid.')
+    if not type(argies["ExcludeIds"]) == frozenset:
+        try:
+            argies["ExcludeIds"] = (frozenset(argies["ExcludeIds"].split(
+                ',')) | frozenset(exclude_list)) - frozenset([''])
+        except:
+            stoperr(f'TaxID(s) {argies["ExcludeIds"]} invalid.')
+        try:
+            argies["retain"] = (frozenset(argies["RetainIds"].split(
+                ',')) | frozenset(retain_list)) - frozenset([''])
+        except:
+            stoperr(f'TaxID(s) {argies["RetainIds"]} invalid.')
     if not argies["ExcludeIds"] and not argies["RetainIds"]:
         stoperr('Nothing to do. Exiting.')
 

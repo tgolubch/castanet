@@ -5,6 +5,11 @@ from pydantic import BaseModel, Field, FilePath, DirectoryPath, validator
 '''Primitives'''
 
 
+class Data_BatchName(BaseModel):
+    BatchName: DirectoryPath = Query('./MyRawData/',
+                                     description="Path to recursively read for individual datasets.")
+
+
 class Data_ExpDir(BaseModel):
     ExpDir: DirectoryPath = Query('./data/',
                                   description="Path to retrieve and store data.")
@@ -21,8 +26,8 @@ class Data_AdaptP(BaseModel):
 
 
 class Data_RefStem(BaseModel):
-    RefStem: str = Query("rmlst_virus_extra_ercc_2018.fasta",
-                         description="Path to mapping file, in fasta format. Assumes lives in data dir.")
+    RefStem: str = Query("data/rmlst_virus_extra_ercc_2018.fasta",
+                         description="Path to mapping file, in fasta format.")
 
 
 class Data_PostFilt(BaseModel):
@@ -108,4 +113,9 @@ class Analysis_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AnalysisExtras
 
 
 class Post_filter_data(Data_ExpDir, Data_SeqName, Data_ExpName):
+    ...
+
+
+class Batch_data(Data_BatchName, Data_ExpDir, Data_AdaptP, Data_RefStem,
+                 Data_PostFilt, Data_AnalysisExtras, Data_KrakenDir, Data_NThreads, Data_FilterFilters):
     ...

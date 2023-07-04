@@ -1,7 +1,10 @@
+import os
+import re
 from fastapi import FastAPI, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
-from app.utils.system_messages import banner
+from app.utils.system_messages import banner, end_sec_print
 from app.utils.utility_fns import make_exp_dir
+from app.utils.write_logs import write_input_params
 from app.src.preprocess import run_kraken
 from app.src.filter_keep_reads import FilterKeepReads
 from app.src.trim_adapters import run_trim
@@ -9,7 +12,7 @@ from app.src.map_reads_to_ref import run_map
 from app.src.generate_counts import run_counts
 from app.src.analysis import Analysis
 from app.src.post_filter import run_post_filter
-from app.utils.api_classes import (E2e_data, Preprocess_data, Filter_keep_reads_data,
+from app.utils.api_classes import (Batch_data, E2e_data, Preprocess_data, Filter_keep_reads_data,
                                    Trim_data, Mapping_data, Count_map_data, Analysis_data,
                                    Post_filter_data)
 
@@ -40,7 +43,7 @@ banner()
 
 app = FastAPI(
     title="Castanet",
-    version="0.2",
+    version="0.3",
     description=description,
     contact={
         "name": "Nuffield Department of Medicine, University of Oxford",
@@ -53,6 +56,15 @@ app = FastAPI(
     openapi_tags=tags_metadata
 )
 
+'''Utility Functions'''
+
+
+def process_payload(payload):
+    payload = jsonable_encoder(payload)
+    write_input_params(payload)
+    return payload
+
+
 '''Dev Endpoints'''
 
 
@@ -64,9 +76,40 @@ async def read_root():
 '''Consumer endpoints'''
 
 
+@app.post("/batch/", tags=["Dev endpoints"])
+async def batch(payload: Batch_data):
+    payload = process_payload(payload)
+    SeqNames = get_batch_seqnames(payload["BatchName"])
+    for i in SeqNames:
+        payload["ExpDir"] = "/".join(i[1][1].split("/")[:-1])
+        payload["ExpName"] = payload["SeqName"] = i[0]
+        run_end_to_end(payload)
+    return "Task complete. See terminal output for details."
+
+
+def get_batch_seqnames(batch_name):
+    fstems = []
+    for folder in os.listdir(batch_name):
+        f_full = [f'{batch_name}/{folder}/{"_".join(i.split("_")[:-1])}' for i in os.listdir(
+            f"{batch_name}/{folder}") if re.match(r"[\s\S]*?\.fastq.gz", i)]
+        f = ["_".join(i.split("_")[:-1]) for i in os.listdir(
+            f"{batch_name}/{folder}") if re.match(r"[\s\S]*?\.fastq.gz", i)]
+        assert len(
+            f) == 2,  "Incorrect number of files in directory, please ensure your experiment folder contains only two fasta.gz files."
+        assert f[0] == f[1], "Inconsistent naming between paired read files, please revise your naming conventions."
+        fstems.append([list(set(f))[0], f_full])
+    return fstems
+
+
 @app.post("/end_to_end/", tags=["End to end pipeline"])
 async def end_to_end(payload: E2e_data):
-    payload = jsonable_encoder(payload)
+    payload = process_payload(payload)
+    end_sec_print(
+        f"INFO: Starting run, saving results to {payload['ExpName']}.")
+    run_end_to_end(payload)
+
+
+def run_end_to_end(payload):
     make_exp_dir(payload["ExpName"])
     run_kraken(payload)
     do_filter_keep_reads(payload)
@@ -81,7 +124,7 @@ async def end_to_end(payload: E2e_data):
 
 @app.post("/preprocess/", tags=["Individual pipeline functions"])
 async def preprocess(payload: Preprocess_data):
-    payload = jsonable_encoder(payload)
+    payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_kraken(payload)
     return "Task complete. See terminal output for details."
@@ -89,7 +132,7 @@ async def preprocess(payload: Preprocess_data):
 
 @app.post("/filter_keep_reads/", tags=["Individual pipeline functions"])
 async def filter_keep_reads(payload: Filter_keep_reads_data):
-    payload = jsonable_encoder(payload)
+    payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     do_filter_keep_reads(payload)
     return "Task complete. See terminal output for details."
@@ -102,7 +145,7 @@ def do_filter_keep_reads(payload):
 
 @app.post("/trim_data/", tags=["Individual pipeline functions"])
 async def trim_data(payload: Trim_data):
-    payload = jsonable_encoder(payload)
+    payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_trim(payload)
     return "Task complete. See terminal output for details."
@@ -110,7 +153,7 @@ async def trim_data(payload: Trim_data):
 
 @app.post("/mapping/", tags=["Individual pipeline functions"])
 async def mapping(payload: Mapping_data):
-    payload = jsonable_encoder(payload)
+    payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_map(payload)
     return "Task complete. See terminal output for details."
@@ -118,7 +161,7 @@ async def mapping(payload: Mapping_data):
 
 @app.post("/generate_counts/", tags=["Individual pipeline functions"])
 async def count_mapped(payload: Count_map_data):
-    payload = jsonable_encoder(payload)
+    payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_counts(payload)
     return "Task complete. See terminal output for details."
@@ -126,7 +169,7 @@ async def count_mapped(payload: Count_map_data):
 
 @app.post("/analysis/", tags=["Individual pipeline functions"])
 async def analysis(payload: Analysis_data):
-    payload = jsonable_encoder(payload)
+    payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_analysis(payload)
     return "Task complete. See terminal output for details."
@@ -139,10 +182,7 @@ def run_analysis(payload):
 
 @app.post("/post_filter/", tags=["Individual pipeline functions"])
 async def post_filter(payload: Post_filter_data):
-    payload = jsonable_encoder(payload)
+    payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_post_filter(payload)
     return "Task complete. See terminal output for details."
-
-'''Conveninece endpoints'''
-...

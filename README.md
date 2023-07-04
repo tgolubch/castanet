@@ -119,7 +119,7 @@ Uses Trimmomatic to remove low quality reads and sequencer adapters. We assume t
 Uses BWA algorithm to map reads against reference sequences. Initial step is to index the reference .fasta file (not included!), after which mem function is used to map your cleaned input sequences against the indexed references. Samtools are then used to map the output to the shell, which are then sorted and saved as a compressed alignment map (*.bam) file.
 
 *Input args*
-1. Reference sequence file [RefStem]. Reference sequences in .fasta format. Not included in repo as results are likely to be sensitive. Castanet will look for file in your data directory by default.
+1. Reference sequence file [RefStem]. Reference sequences in .fasta format. Include full file path and extension.
 
 *Output*
 1. Compressed alignment map file: {ExpDir}{SeqName}.bam
