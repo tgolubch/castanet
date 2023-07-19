@@ -10,11 +10,12 @@ from app.src.filter_keep_reads import FilterKeepReads
 from app.src.trim_adapters import run_trim
 from app.src.map_reads_to_ref import run_map
 from app.src.generate_counts import run_counts
+from app.src.consensus import Consensus
 from app.src.analysis import Analysis
 from app.src.post_filter import run_post_filter
 from app.utils.api_classes import (Batch_data, E2e_data, Preprocess_data, Filter_keep_reads_data,
                                    Trim_data, Mapping_data, Count_map_data, Analysis_data,
-                                   Post_filter_data)
+                                   Post_filter_data, Consensus_data)
 
 description = """
 CASTANET is software for analysis of targeted metagenomics sequencing data, originally by tgolubch (https://github.com/tgolubch) and refactored to Python3 by mayne941 (https://github.com/Mayne941).
@@ -59,7 +60,7 @@ app = FastAPI(
 '''Utility Functions'''
 
 
-def process_payload(payload):
+def process_payload(payload) -> dict:
     payload = jsonable_encoder(payload)
     write_input_params(payload)
     return payload
@@ -69,7 +70,7 @@ def process_payload(payload):
 
 
 @app.get("/", tags=["Dev endpoints"])
-async def read_root():
+async def read_root() -> dict:
     return {"response": "API is healthy. Append the current URL to include '/docs/' at the end to visit the GUI."}
 
 
@@ -77,7 +78,7 @@ async def read_root():
 
 
 @app.post("/batch/", tags=["Dev endpoints"])
-async def batch(payload: Batch_data):
+async def batch(payload: Batch_data) -> str:
     payload = process_payload(payload)
     SeqNames = get_batch_seqnames(payload["BatchName"])
     for i in SeqNames:
@@ -87,7 +88,7 @@ async def batch(payload: Batch_data):
     return "Task complete. See terminal output for details."
 
 
-def get_batch_seqnames(batch_name):
+def get_batch_seqnames(batch_name) -> list:
     fstems = []
     for folder in os.listdir(batch_name):
         f_full = [f'{batch_name}/{folder}/{"_".join(i.split("_")[:-1])}' for i in os.listdir(
@@ -102,14 +103,14 @@ def get_batch_seqnames(batch_name):
 
 
 @app.post("/end_to_end/", tags=["End to end pipeline"])
-async def end_to_end(payload: E2e_data):
+async def end_to_end(payload: E2e_data) -> None:
     payload = process_payload(payload)
     end_sec_print(
         f"INFO: Starting run, saving results to {payload['ExpName']}.")
     run_end_to_end(payload)
 
 
-def run_end_to_end(payload):
+def run_end_to_end(payload) -> str:
     make_exp_dir(payload["ExpName"])
     run_kraken(payload)
     do_filter_keep_reads(payload)
@@ -123,7 +124,7 @@ def run_end_to_end(payload):
 
 
 @app.post("/preprocess/", tags=["Individual pipeline functions"])
-async def preprocess(payload: Preprocess_data):
+async def preprocess(payload: Preprocess_data) -> str:
     payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_kraken(payload)
@@ -131,20 +132,20 @@ async def preprocess(payload: Preprocess_data):
 
 
 @app.post("/filter_keep_reads/", tags=["Individual pipeline functions"])
-async def filter_keep_reads(payload: Filter_keep_reads_data):
+async def filter_keep_reads(payload: Filter_keep_reads_data) -> str:
     payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     do_filter_keep_reads(payload)
     return "Task complete. See terminal output for details."
 
 
-def do_filter_keep_reads(payload):
+def do_filter_keep_reads(payload) -> None:
     cls = FilterKeepReads(payload)
     cls.main()
 
 
 @app.post("/trim_data/", tags=["Individual pipeline functions"])
-async def trim_data(payload: Trim_data):
+async def trim_data(payload: Trim_data) -> str:
     payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_trim(payload)
@@ -152,7 +153,7 @@ async def trim_data(payload: Trim_data):
 
 
 @app.post("/mapping/", tags=["Individual pipeline functions"])
-async def mapping(payload: Mapping_data):
+async def mapping(payload: Mapping_data) -> str:
     payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_map(payload)
@@ -160,28 +161,41 @@ async def mapping(payload: Mapping_data):
 
 
 @app.post("/generate_counts/", tags=["Individual pipeline functions"])
-async def count_mapped(payload: Count_map_data):
+async def count_mapped(payload: Count_map_data) -> str:
     payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_counts(payload)
     return "Task complete. See terminal output for details."
 
 
+@app.post("/consensus/", tags=["Individual pipeline functions"])
+async def consensus(payload: Consensus_data) -> str:
+    payload = process_payload(payload)
+    make_exp_dir(payload["ExpName"])
+    do_consensus(payload)
+    return "Task complete. See terminal output for details."
+
+
+def do_consensus(payload):
+    clf = Consensus(payload)
+    clf.main()
+
+
 @app.post("/analysis/", tags=["Individual pipeline functions"])
-async def analysis(payload: Analysis_data):
+async def analysis(payload: Analysis_data) -> str:
     payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_analysis(payload)
     return "Task complete. See terminal output for details."
 
 
-def run_analysis(payload):
+def run_analysis(payload) -> None:
     cls = Analysis(payload)
     cls.main()
 
 
 @app.post("/post_filter/", tags=["Individual pipeline functions"])
-async def post_filter(payload: Post_filter_data):
+async def post_filter(payload: Post_filter_data) -> str:
     payload = process_payload(payload)
     make_exp_dir(payload["ExpName"])
     run_post_filter(payload)

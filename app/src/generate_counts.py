@@ -11,6 +11,7 @@ def run_counts(p, api_entry=True):
     else:
         p["ExpDir"] = f"{p['ExpDir']}/"
     # shell(f"""for BamFilePath in $(ls experiments/{p['ExpName']}/*.bam); do BamPath=$BamFilePath; BamName=$(basename "BamPath%%.bam"); BamName=$(sed s'/_dedup//' <<< ${{BamName}}); samtools view -F2048 -F4 ${{BamPath}} | python3 -m app.src.parse_bam -Mode parse -SeqName {p['SeqName']} | sort | uniq -c | sed s'/ /,/'g | sed s'/^[,]*//'g; done > experiments/{p['ExpName']}/{p['SeqName']}_PosCounts.csv""")
+    # RM < TODO BROKEN INTO STEPS SO CAN BREAKPOINT PARSE_BAM
     shell(
         f"""for BamFilePath in $(ls experiments/{p['ExpName']}/*.bam); do BamPath=$BamFilePath; BamName=$(basename "BamPath%%.bam"); BamName=$(sed s'/_dedup//' <<< ${{BamName}}); samtools view -F2048 -F4 ${{BamPath}} > bamview.txt; done """)
     shell(f"python3 -m app.src.parse_bam -Mode parse -SeqName {p['SeqName']}")

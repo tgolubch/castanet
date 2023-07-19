@@ -85,37 +85,41 @@ class Data_AnalysisExtras(BaseModel):
 
 class E2e_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AdaptP, Data_RefStem,
                Data_PostFilt, Data_AnalysisExtras, Data_KrakenDir, Data_NThreads, Data_FilterFilters):
-    ...
+    pass
 
 
 class Preprocess_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_KrakenDir, Data_NThreads):
-    ...
+    pass
 
 
 class Filter_keep_reads_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_FilterFilters):
-    ...
+    pass
 
 
 class Trim_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AdaptP, Data_NThreads):
-    ...
+    pass
 
 
 class Mapping_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_RefStem):
-    ...
+    pass
 
 
 class Count_map_data(Data_ExpDir, Data_SeqName, Data_ExpName):
-    ...
+    pass
 
 
 class Analysis_data(Data_ExpDir, Data_SeqName, Data_ExpName, Data_AnalysisExtras):
-    ...
+    pass
 
 
 class Post_filter_data(Data_ExpDir, Data_SeqName, Data_ExpName):
-    ...
+    pass
 
 
 class Batch_data(Data_BatchName, Data_ExpDir, Data_AdaptP, Data_RefStem,
                  Data_PostFilt, Data_AnalysisExtras, Data_KrakenDir, Data_NThreads, Data_FilterFilters):
-    ...
+    pass
+
+
+class Consensus_data(Data_ExpName, Data_SeqName, Data_RefStem):
+    pass
