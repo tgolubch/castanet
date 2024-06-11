@@ -26,10 +26,15 @@ filter_keep_reads.py -i ${SeqName}_[12].fastq.gz  -k ${SeqName}.kraken.gz --xT H
 
 2) Map each sample's reads to the reference containing consensus target sequences with your mapper of choice, and produce a sorted BAM file of mapped reads only, for each sample. Do **not** deduplicate the BAM files.
 ```bash
-    bwa index rmlst_virus_extra_ercc.fasta
-    RefStem="rmlst_virus_extra_ercc.fasta"
-    bwa mem ${RefStem} SeqName[12]_clean.fastq | samtools view -F4 -Sb -| samtools sort - 1> ${SeqName}.bam 
+bwa index rmlst_virus_extra_ercc.fasta
+RefStem="rmlst_virus_extra_ercc.fasta"
+bwa mem ${RefStem} SeqName_[12]_clean.fastq | samtools view -F4 -Sb -| samtools sort - 1> ${SeqName}.bam 
 ```
+If using your own reference file, you can generate a probelengths CSV for analysis using the supplied helper script:
+``` bash
+bam2probelengths.sh ${SeqName}.bam 1> ${RefStem}_probelengths.csv
+```
+
 
 3) Generate a CSV file containing the counts for each uniquely mapped sequence in the entire pool, including improper pairs:
 ```bash
